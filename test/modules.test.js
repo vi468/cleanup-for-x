@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
 import {
-  userCell, твит, архивТвитов, архивТвитовКрайние,
+  userCell, твит, архивТвитов, архивТвитовКрайние, архивОтветовКрайние,
   архивЛайков, архивЛайковКрайние, архивЛайковБитый,
   архивПодписок, архивПодписчиков
 } from './fixtures.js';
@@ -15,7 +15,7 @@ import {
 const ждать = (мс = 40) => new Promise(готово => setTimeout(готово, мс));
 
 const ВСЕ_ВКЛЮЧЕНЫ = {
-  tweets: true, reposts: true, quotes: true, likes: true, ghostlikes: true, dms: true, unfollow: true
+  tweets: true, reposts: true, quotes: true, replies: true, likes: true, ghostlikes: true, dms: true, unfollow: true
 };
 
 /** Страница X с заглушками расширения и «видимыми» элементами (jsdom без раскладки). */
@@ -424,6 +424,27 @@ const загрузитьФайл = async (dom, idИнпута, текст, им�
   assert.match(статусЦитат, /репостов 4/, 'репост с текстом «RT @» в поле text тоже репост');
   assert.match(статусЦитат, /обычных твитов 2/, 'обычные твиты (2005 и 2006) в цитаты не попадают');
   console.log('ок: разбор архива — репосты по флагу и по «RT @», дубликаты и цитаты не путаются');
+  dom.window.close();
+}
+
+// --- 9b. разбор архива: ответы по in_reply_to, дубли и чужие записи ------
+{
+  const dom = страница('/home', '', { 'защита': { ники: [], id: [] } });
+  await поднять(dom, ['../content/replies.js']);
+
+  await загрузитьФайл(dom, '__replies_инпут', архивОтветовКрайние(), 'tweets.js');
+  const панель = dom.window.__ответы.панель;
+  const статус = панель.querySelector('[data-статус]').textContent;
+  assert.match(статус, /в файле 3/, 'ответы по id, нику и user_id; дубль 3001 схлопывается');
+  assert.match(статус, /обычных твитов 2/, 'цитата и обычный твит — не ответы');
+  assert.match(статус, /репостов 1/);
+
+  панель.querySelector('[data-старт]').dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+  await ждать(40);
+  const старт = dom.window.__сообщения.find(с => с.type === 'jobs-start');
+  assert.ok(старт, 'ответы должны отдать очередь в фон');
+  assert.deepEqual([...старт.ids], ['3001', '3002', '3003']);
+  console.log('ок: разбор архива — ответы по in_reply_to всех трёх видов');
   dom.window.close();
 }
 

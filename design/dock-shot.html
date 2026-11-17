@@ -18,7 +18,7 @@
 <script>
   const ru = (navigator.language || 'en').startsWith('ru');
   const L = ru ? {
-    tabs: { reposts: 'Репосты', quotes: 'Цитаты', likes: 'Лайки', stuck: 'Зависшие' },
+    tabs: { reposts: 'Репосты', quotes: 'Цитаты', replies: 'Ответы', likes: 'Лайки', stuck: 'Зависшие' },
     idle: 'не запущено',
     status: 'Выберите файл из архива X — покажу, сколько записей нашлось.',
     choose: 'Выбрать tweets.js',
@@ -27,7 +27,7 @@
     stop: 'Стоп',
     more: 'Где взять файл и что ещё можно сделать'
   } : {
-    tabs: { reposts: 'Reposts', quotes: 'Quotes', likes: 'Likes', stuck: 'Stuck' },
+    tabs: { reposts: 'Reposts', quotes: 'Quotes', replies: 'Replies', likes: 'Likes', stuck: 'Stuck' },
     idle: 'not started',
     status: 'Pick a file from your X archive — I will show how many records were found.',
     choose: 'Choose tweets.js',
@@ -69,6 +69,7 @@
   window.addEventListener('load', () => {
     XCDock.регистрировать({ id: 'reposts', титул: L.tabs.reposts, элемент: panel(L.tabs.reposts) });
     XCDock.регистрировать({ id: 'quotes', титул: L.tabs.quotes, элемент: panel(L.tabs.quotes) });
+    XCDock.регистрировать({ id: 'replies', титул: L.tabs.replies, элемент: panel(L.tabs.replies) });
     XCDock.регистрировать({ id: 'likes', титул: L.tabs.likes, элемент: panel(L.tabs.likes) });
     XCDock.регистрировать({ id: 'ghostlikes', титул: L.tabs.stuck, элемент: panel(L.tabs.stuck) });
     XCDock.показать('reposts');

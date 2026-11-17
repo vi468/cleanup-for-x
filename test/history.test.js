@@ -35,7 +35,7 @@ console.log('ок: добавление и дедупликация');
 
 await H.добавить('reposts', ['r1']);
 let всё = await H.всё();
-assert.deepEqual([...Object.keys(всё)].sort(), ['dms', 'ghostlikes', 'likes', 'quotes', 'reposts', 'tweets', 'unfollow']);
+assert.deepEqual([...Object.keys(всё)].sort(), ['dms', 'ghostlikes', 'likes', 'quotes', 'replies', 'reposts', 'tweets', 'unfollow']);
 assert.equal(всё.unfollow, 3);
 assert.equal(всё.reposts, 1);
 assert.equal(всё.tweets, 0);

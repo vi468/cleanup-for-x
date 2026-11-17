@@ -24,6 +24,7 @@
     tweets: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 5.2h11.2"/><path d="M7 5.2V3.6h4v1.6"/><path d="M4.8 5.2l.7 9.2h7l.7-9.2"/><path d="M7.6 8v4M10.4 8v4"/></svg>',
     reposts: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 6.6h9.4l-2.3-2.3"/><path d="M15.2 11.4H5.8l2.3 2.3"/></svg>',
     quotes: '<svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M7 5.4C4.7 6.1 3.3 7.9 3.3 10.3v2.5h3.5v-3.4H5.1c.1-1.1.7-1.8 1.9-2.2L7 5.4Z"/><path d="M13.4 5.4c-2.3.7-3.7 2.5-3.7 4.9v2.5h3.5v-3.4h-1.7c.1-1.1.7-1.8 1.9-2.2l-.4-1.8Z"/></svg>',
+    replies: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 11.6 11.2 15l-3.4-3.4"/><path d="M11.2 15V8.9a3.3 3.3 0 0 0-3.3-3.3H3.4"/></svg>',
     likes: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15s-5.6-3.4-5.6-7A3.2 3.2 0 0 1 9 5.8 3.2 3.2 0 0 1 14.6 8c0 3.6-5.6 7-5.6 7Z"/></svg>',
     ghostlikes: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.9 14.7S3.8 11.6 3.8 8.3A3 3 0 0 1 8.9 6.2a3 3 0 0 1 4.9 1.6"/><path d="M11.9 12.1a3.3 3.3 0 1 0 1.6 1.6"/><path d="M13.7 10.9v3h-3"/></svg>',
     unfollow: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7.5" cy="6.2" r="2.9"/><path d="M2.6 15c0-2.6 2.3-4.3 4.9-4.3s4.9 1.7 4.9 4.3"/><path d="M12.6 4.4h3.6"/></svg>',
@@ -90,6 +91,26 @@
       страница: ник => ник ? `https://x.com/${ник}` : 'https://x.com/home',
       кнопка: { ru: 'Открыть профиль', en: 'Open profile' },
       иконка: иконки.quotes
+    },
+    replies: {
+      название: { ru: 'Удаление ответов', en: 'Delete replies' },
+      кратко: {
+        ru: 'Удаляет твои ответы чужим постам — по архиву или при листании',
+        en: 'Deletes your replies — from the archive or while scrolling'
+      },
+      где: { ru: 'профиль → «Ответы», файл tweets.js', en: 'profile → Replies, tweets.js' },
+      режим: 'фон',
+      подробнее: {
+        ru: 'Ответ — свой твит с пометкой «В ответ @ник». Берёт data/tweets.js из архива и удаляет записи с in_reply_to — обычные твиты и репосты остаются. Без архива можно открыть свой профиль на вкладке «Ответы» и листать: каждый ответ уходит в очередь по одному.',
+        en: 'A reply is your own tweet marked “Replying to @someone”. Takes data/tweets.js from the archive and deletes records with in_reply_to, leaving regular tweets and reposts alone. Without the archive, open your profile’s Replies tab and scroll: each reply is queued and deleted one by one.'
+      },
+      совет: {
+        ru: 'В ленте профиля ответы неотличимы от твитов, поэтому без архива модуль работает только на вкладке «Ответы». Листание берёт лишь то, что X успел отрисовать; полный список даёт архив.',
+        en: 'In the profile timeline replies look like regular tweets, so without the archive the module only works on the Replies tab. Scrolling reaches only what X has rendered; the archive gives the full list.'
+      },
+      страница: ник => ник ? `https://x.com/${ник}/with_replies` : 'https://x.com/home',
+      кнопка: { ru: 'Открыть «Ответы»', en: 'Open Replies' },
+      иконка: иконки.replies
     },
     likes: {
       название: { ru: 'Удаление лайков', en: 'Remove likes' },
@@ -178,7 +199,7 @@
     {
       id: 'posts',
       название: { ru: 'Посты и лайки', en: 'Posts and likes' },
-      иды: ['tweets', 'reposts', 'quotes', 'likes', 'ghostlikes']
+      иды: ['tweets', 'reposts', 'quotes', 'replies', 'likes', 'ghostlikes']
     },
     {
       id: 'people',
@@ -193,6 +214,7 @@
     unfollow: { ru: 'Отписка', en: 'Unfollow' },
     reposts: { ru: 'Репосты', en: 'Reposts' },
     quotes: { ru: 'Цитаты', en: 'Quotes' },
+    replies: { ru: 'Ответы', en: 'Replies' },
     likes: { ru: 'Лайки', en: 'Likes' },
     ghostlikes: { ru: 'Зависшие лайки', en: 'Stuck likes' }
   };

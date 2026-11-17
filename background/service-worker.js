@@ -11,7 +11,7 @@
 import * as очередь from './queue.js';
 import * as хранилище from './store.js';
 
-const ПО_УМОЛЧАНИЮ = { tweets: true, reposts: true, quotes: true, likes: true,
+const ПО_УМОЛЧАНИЮ = { tweets: true, reposts: true, quotes: true, replies: true, likes: true,
   ghostlikes: true, dms: true, unfollow: true };
 
 // Числа из сообщений вкладки: мусор не должен попадать в темп очереди.

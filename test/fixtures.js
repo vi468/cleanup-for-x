@@ -49,6 +49,20 @@ export const архивТвитовКрайние = () => {
   return 'window.YTD.tweets.part0 = ' + JSON.stringify(записи) + ';';
 };
 
+/** data/tweets.js с ответами: id, ник, user_id, дубль, цитата, репост, обычный. */
+export const архивОтветовКрайние = () => {
+  const записи = [
+    { tweet: { id_str: '3001', full_text: 'ответ по id', in_reply_to_status_id_str: '900' } },
+    { tweet: { id_str: '3002', full_text: 'ответ по нику', in_reply_to_screen_name: 'someone' } },
+    { tweet: { id_str: '3001', full_text: 'ответ по id', in_reply_to_status_id_str: '900' } },
+    { tweet: { id_str: '3003', full_text: 'ответ по user_id', in_reply_to_user_id_str: '42' } },
+    { tweet: { id_str: '3004', full_text: 'мой комментарий', is_quote_status: true } },
+    { tweet: { id_str: '3005', full_text: 'RT @someone: чужой текст', retweeted: true } },
+    { tweet: { id_str: '3006', full_text: 'обычный твит' } }
+  ];
+  return 'window.YTD.tweets.part0 = ' + JSON.stringify(записи) + ';';
+};
+
 /** data/like.js из архива X. */
 export const архивЛайков = сколько => {
   const записи = Array.from({ length: сколько }, (_, и) => ({ like: { tweetId: String(9000 + и) } }));

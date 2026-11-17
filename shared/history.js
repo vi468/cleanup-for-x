@@ -13,7 +13,7 @@
 // ---------------------------------------------------------------------------
 (() => {
   const КЛЮЧ = 'история';
-  const МОДУЛИ = ['unfollow', 'reposts', 'quotes', 'likes', 'ghostlikes', 'tweets', 'dms'];
+  const МОДУЛИ = ['unfollow', 'reposts', 'quotes', 'replies', 'likes', 'ghostlikes', 'tweets', 'dms'];
   // Тот же лимит, что в background/store.js: история — память о сделанном,
   // а не склад; глубже 20 000 id на модуль она только тормозит попап.
   const ЛИМИТ = 20000;

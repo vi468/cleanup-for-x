@@ -6,7 +6,7 @@
     "message": "Cleanup"
   },
   "description": {
-    "message": "Delete tweets, reposts, quotes and likes, clean DMs, unfollow non-followers."
+    "message": "Delete tweets, replies, reposts, quotes and likes, clean DMs, unfollow non-followers."
   },
   "actionTitle": {
     "message": "Cleanup for X"

@@ -2,7 +2,7 @@
 
 **English** · [Русский](README.ru.md)
 
-A Chrome extension (Manifest V3) with seven cleanup tools for your X account in one
+A Chrome extension (Manifest V3) with eight cleanup tools for your X account in one
 popup. It deletes your tweets, reposts, quotes and likes, cleans up direct
 messages, unfollows people who do not follow you back and removes posts that
 stayed in Likes without a like.
@@ -43,7 +43,7 @@ preview can be forced with `?lang=ru` or `?lang=en`.
 
 | Part | Where | How it works |
 |---|---|---|
-| **Popup** | extension icon | seven module cards, live queues, protect list, history, export/import |
+| **Popup** | extension icon | eight module cards, live queues, protect list, history, export/import |
 | **Dock on the page** | bottom right corner of x.com | tabs for enabled modules, progress, event log, “stop all”; the header shows what is running even when the dock is collapsed |
 | **Background engine** | service worker | unfollow, reposts, quotes and likes run in the background: you can close the tab and the queue continues from the same place. Stuck likes run synchronously with the tab open: the panel puts and removes one like at a time |
 
@@ -115,6 +115,18 @@ A quote is your own tweet with a comment and someone else’s post embedded. The
 module takes `tweets.js` from the archive, keeps records with
 `is_quote_status: true` and deletes them through `DeleteTweet`. Reposts and
 regular tweets stay. Runs in the background.
+
+### Delete replies
+
+A reply is your own tweet with `in_reply_to` set, shown in the interface as
+“Replying to @someone”. The module takes `tweets.js` from the archive, keeps
+records with `in_reply_to_status_id_str`, `in_reply_to_user_id_str` or
+`in_reply_to_screen_name` and deletes them through `DeleteTweet`. Regular tweets
+and reposts stay.
+
+Without the archive: open your profile’s Replies tab and scroll. Each card is
+queued and deleted one at a time, the same way reposts are undone. The tab has to
+stay open, and it only reaches what X has already rendered.
 
 ### Remove likes
 
@@ -229,7 +241,7 @@ Why: runs are large and easily interrupted. A second run:
 - tweets and DMs — records go to history as they are deleted, so you can see how
   much is done.
 
-The **“What has been done”** block has seven rows with counters and a “clear”
+The **“What has been done”** block has eight rows with counters and a “clear”
 button for each. Clearing does not bring anything back. The extension just stops
 remembering those records.
 
@@ -331,6 +343,7 @@ shared/xqid.js                 current queryId and x-client-transaction-id
 content/tweets.js              delete your tweets
 content/reposts.js             undo reposts from archive and while scrolling
 content/quotes.js              delete your quotes
+content/replies.js             delete your replies (archive or Replies tab)
 content/likes.js               remove likes
 content/ghost-likes.js         stuck likes: collect from the Likes page
 content/dms.js                 clean up conversations

@@ -102,10 +102,10 @@ await ждать(30);
 
 // --- 1. модули нарисованы по словарю --------------------------------------
 const карточки = [...document.querySelectorAll('.module')];
-assert.equal(карточки.length, 7, 'должно быть семь карточек модулей');
+assert.equal(карточки.length, 8, 'должно быть восемь карточек модулей');
 assert.deepEqual(
   карточки.map(карточка => карточка.dataset.id),
-  ['tweets', 'reposts', 'quotes', 'likes', 'ghostlikes', 'unfollow', 'dms'],
+  ['tweets', 'reposts', 'quotes', 'replies', 'likes', 'ghostlikes', 'unfollow', 'dms'],
   'порядок карточек должен идти по группам словаря'
 );
 assert.equal(document.querySelectorAll('.group').length, 2, 'две группы: посты и люди');

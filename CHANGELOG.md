@@ -2,6 +2,16 @@
 
 **English** · [Русский](CHANGELOG.ru.md)
 
+## 1.15.0 — 17.11.2026
+
+- new module “Delete replies”: takes `tweets.js` from the X archive and removes
+  records with `in_reply_to` — regular tweets and reposts are left alone;
+- without the archive it works on the profile’s Replies tab: scroll, and each
+  reply is queued and deleted one by one, the way reposts are undone;
+- the queue gets a new job type, history keeps its own record for replies, and
+  the archive lists for replies are included in export/import;
+- eight module cards in the popup instead of seven.
+
 ## 1.14.0 — 16.11.2026
 
 - the project is now **Cleanup for X** (it was X Cleaner): the name states the
