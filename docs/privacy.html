@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy — Cleanup for X</title>
+<meta name="description" content="Cleanup for X collects no data, has no servers and sends requests only to x.com. What is stored locally and why the extension needs the storage, cookies and x.com permissions.">
+<style>
+  :root { --bg:#f6f1ea; --card:#fffdfa; --ink:#2b2320; --muted:#6d6058; --line:#e7ded4; --accent:#c96f4a; --accent-ink:#8f4526; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color: var(--accent-ink); text-underline-offset:3px; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 22px 0; border-bottom: 1px solid var(--line); }
+  header .wrap { display:flex; align-items:center; gap:12px; }
+  .logo { width:32px; height:32px; border-radius:9px; }
+  .brand { font-weight:700; }
+  header nav { margin-left:auto; font-size:15px; }
+  header nav a { color: var(--muted); text-decoration:none; }
+  main { padding: 44px 0 64px; }
+  h1 { font-size: 34px; letter-spacing:-.02em; margin:0 0 6px; }
+  h2 { font-size: 21px; margin: 34px 0 10px; letter-spacing:-.01em; }
+  p, li { color: #3a302b; }
+  .lead { color: var(--muted); margin: 0 0 22px; }
+  .note { background: var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
+  .note strong { color: var(--ink); }
+  table { width:100%; border-collapse: collapse; margin: 12px 0 6px; font-size:15px; }
+  th, td { text-align:left; vertical-align: top; padding:9px 10px; border-bottom:1px solid var(--line); }
+  th { font-weight:600; color: var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:.05em; }
+  code { background:#efe6dc; padding:1px 5px; border-radius:5px; font-size:.9em; }
+  footer { border-top:1px solid var(--line); padding:24px 0 48px; color:var(--muted); font-size:14px; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="brand">Cleanup for X</span>
+    <nav><a href="https://github.com/vi468/cleanup-for-x">← Source code</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Privacy policy</h1>
+  <p class="lead">Applies to version 1.13.0 and newer. <a href="privacy-ru.html">Русская версия</a></p>
+
+  <div class="note">
+    <strong>In short:</strong> Cleanup for X does not collect, transmit or sell personal
+    data. The extension runs only in your browser and sends requests only to
+    <code>x.com</code> (and <code>twitter.com</code>) — the site whose tab you opened
+    yourself.
+  </div>
+
+  <h2>What is stored</h2>
+  <p>Everything is stored locally, in your browser’s <code>chrome.storage</code>:</p>
+  <table>
+    <thead><tr><th>Key</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><code>tweets</code>, <code>reposts</code>, <code>quotes</code>, <code>likes</code>, <code>ghostlikes</code>, <code>dms</code>, <code>unfollow</code></td><td>whether a module is on (setting)</td></tr>
+      <tr><td><code>история</code></td><td>ids of tweets, reposts, likes (including stuck ones), conversations and accounts already acted on — so the same action is not repeated</td></tr>
+      <tr><td><code>защита</code></td><td>the “who to leave alone” list: handles and account ids</td></tr>
+      <tr><td><code>архив_списки</code>, <code>архив_репосты</code>, <code>архив_цитаты</code>, <code>архив_лайки</code></td><td>ids from X archive files that you chose in the panel</td></tr>
+      <tr><td><code>задания</code>, <code>задания_очередь</code>, <code>queryids</code></td><td>background queue progress and working request identifiers</td></tr>
+    </tbody>
+  </table>
+  <p>The extension also reads the <code>ct0</code> CSRF cookie and the lists of your tweets,
+  likes, follows and conversations that x.com itself shows on the page, so it can perform
+  the action you picked. That data does not leave the browser and is not sent to the
+  developer or to any third party.</p>
+  <p>The use of information received from Google APIs will adhere to the Chrome Web Store
+  User Data Policy, including the Limited Use requirements.</p>
+  <p>This data never leaves the device. You can delete it with the “clear” buttons in
+  the popup or by removing the extension. The “export to file” file is created
+  locally and saved where the browser is told to save it.</p>
+
+  <h2>What is transmitted</h2>
+  <p>Nothing — to third parties. Requests to <code>x.com</code> are made with your own
+  cookies, as if you pressed buttons on the site. The extension has no servers and
+  uses no analytics, trackers or ad networks.</p>
+
+  <h2>Permissions and why</h2>
+  <ul>
+    <li><strong><code>storage</code></strong> — keep settings, history and the protect list locally.</li>
+    <li><strong><code>cookies</code></strong> — read the <code>ct0</code> CSRF cookie so background actions
+      (unfollow, reposts, quotes, likes, stuck likes) can run as you while the tab is closed.
+      The cookie value is sent nowhere except <code>x.com</code>.</li>
+    <li><strong><code>host_permissions</code> (<code>https://x.com/*</code>, <code>https://twitter.com/*</code>)</strong> —
+      insert buttons and panels on X pages and call the X API.</li>
+  </ul>
+  <p>The extension does not request browser history, other sites, tabs with other
+  addresses, or files on disk.</p>
+
+  <h2>Children</h2>
+  <p>The extension is not intended for children under 13 and does not collect data about them.</p>
+
+  <h2>Changes</h2>
+  <p>If the policy changes, the new version will be published together with a new version of the extension.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about data and deletion — via <a href="https://github.com/vi468/cleanup-for-x/issues">GitHub Issues</a>.</p>
+</main>
+
+<footer class="wrap">
+  Cleanup for X is not affiliated with X Corp. · <a href="https://github.com/vi468/cleanup-for-x">Source code</a>
+</footer>
+
+</body>
+</html>

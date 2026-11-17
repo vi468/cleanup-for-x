@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cleanup for X — dock screenshot</title>
+<!-- Заготовка скриншота дока 1040×1040 для README и карточки магазина.
+     Док собирается настоящим shared/dock.js и shared/ui.css, панели —
+     статичная копия разметки archive-job.js с демо-значениями. -->
+<style>
+  html, body { margin: 0; width: 1040px; height: 1040px; background: #fff; overflow: hidden; }
+</style>
+<link rel="stylesheet" href="../shared/ui.css" />
+</head>
+<body>
+<script src="../shared/i18n.js"></script>
+<script src="../shared/modules.js"></script>
+<script src="../shared/dock.js"></script>
+<script>
+  const ru = (navigator.language || 'en').startsWith('ru');
+  const L = ru ? {
+    tabs: { reposts: 'Репосты', quotes: 'Цитаты', likes: 'Лайки', stuck: 'Зависшие' },
+    idle: 'не запущено',
+    status: 'Выберите файл из архива X — покажу, сколько записей нашлось.',
+    choose: 'Выбрать tweets.js',
+    nothing: 'в архиве пока ничего',
+    undo: 'Отменить',
+    stop: 'Стоп',
+    more: 'Где взять файл и что ещё можно сделать'
+  } : {
+    tabs: { reposts: 'Reposts', quotes: 'Quotes', likes: 'Likes', stuck: 'Stuck' },
+    idle: 'not started',
+    status: 'Pick a file from your X archive — I will show how many records were found.',
+    choose: 'Choose tweets.js',
+    nothing: 'nothing in the archive yet',
+    undo: 'Undo',
+    stop: 'Stop',
+    more: 'Where to get the file and what else you can do'
+  };
+
+  const panel = title => {
+    const el = document.createElement('div');
+    el.className = 'xc-panel';
+    el.dataset.empty = '1';
+    el.innerHTML = `
+      <div class="xc-head">
+        <div class="xc-title">${title}</div>
+        <div class="xc-chip">${L.idle}</div>
+      </div>
+      <div class="xc-cards">
+        <div class="xc-card"><div class="xc-num">0</div><div class="xc-label">left</div></div>
+        <div class="xc-card"><div class="xc-num">0</div><div class="xc-label">done</div></div>
+      </div>
+      <div class="xc-bar"><i style="width:0%"></i></div>
+      <div class="xc-meta"><span>nothing running</span></div>
+      <div class="xc-status" role="status">${L.status}</div>
+      <button class="xc-btn xc-btn--wide">${L.choose}</button>
+      <div class="xc-note">${L.nothing}</div>
+      <div class="xc-row">
+        <button class="xc-btn xc-btn--primary xc-btn--wide" disabled>${L.undo}</button>
+        <button class="xc-btn" disabled>${L.stop}</button>
+      </div>
+      <details class="xc-details">
+        <summary>${L.more}</summary>
+        <div class="xc-details-body"></div>
+      </details>`;
+    return el;
+  };
+
+  window.addEventListener('load', () => {
+    XCDock.регистрировать({ id: 'reposts', титул: L.tabs.reposts, элемент: panel(L.tabs.reposts) });
+    XCDock.регистрировать({ id: 'quotes', титул: L.tabs.quotes, элемент: panel(L.tabs.quotes) });
+    XCDock.регистрировать({ id: 'likes', титул: L.tabs.likes, элемент: panel(L.tabs.likes) });
+    XCDock.регистрировать({ id: 'ghostlikes', титул: L.tabs.stuck, элемент: panel(L.tabs.stuck) });
+    XCDock.показать('reposts');
+  });
+</script>
+</body>
+</html>

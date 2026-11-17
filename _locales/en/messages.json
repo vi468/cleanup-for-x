@@ -1,0 +1,14 @@
+{
+  "name": {
+    "message": "Cleanup for X"
+  },
+  "shortName": {
+    "message": "Cleanup"
+  },
+  "description": {
+    "message": "Delete tweets, reposts, quotes and likes, clean DMs, unfollow non-followers."
+  },
+  "actionTitle": {
+    "message": "Cleanup for X"
+  }
+}

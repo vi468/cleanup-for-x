@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="popup.css" />
+  <title>Cleanup for X</title>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">CX</span>
+      <span class="brand-text">
+        <b>Cleanup for X</b>
+        <i data-i18n="app.subtitle">account cleanup for X</i>
+      </span>
+    </div>
+    <button id="open-x" class="link-btn" type="button" data-i18n="app.openX">Open x.com</button>
+  </header>
+
+  <div id="page-state" class="page-state" role="status">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="page-state-text">…</span>
+  </div>
+
+  <section id="jobs" class="jobs" hidden aria-label="In progress" data-i18n-aria="jobs.aria">
+    <div class="jobs-head">
+      <h2 data-i18n="jobs.title">In progress</h2>
+      <button id="jobs-stop-all" class="link-btn danger" type="button" data-i18n="jobs.stopAll">Stop all</button>
+    </div>
+    <div id="jobs-list"></div>
+  </section>
+
+  <div id="notice" class="notice" hidden role="alert"></div>
+
+  <main id="modules"></main>
+
+  <section id="protect" class="block">
+    <div class="block-head">
+      <div class="block-title">
+        <b data-i18n="protect.title">Who not to touch</b>
+        <i data-i18n="protect.subtitle">these accounts will not be unfollowed</i>
+      </div>
+      <span class="badge" id="protect-count">0</span>
+      <button id="protect-toggle" class="link-btn" type="button" aria-expanded="false" aria-controls="protect-body" data-i18n="common.list">list</button>
+    </div>
+    <div id="protect-body" hidden>
+      <textarea id="protect-text" rows="3" aria-label="Text with links, handles or ids" data-i18n-aria="protect.textAria" data-i18n-placeholder="protect.placeholder" placeholder="Paste any text: links, @handles, names or ids — accounts will be extracted"></textarea>
+      <div class="btn-row">
+        <button id="protect-add-text" class="btn btn-solid" type="button" data-i18n="protect.addText">Add from text</button>
+        <button id="protect-clear" class="btn btn-danger" type="button" data-i18n="protect.clearAll">Clear all</button>
+      </div>
+      <div class="btn-row">
+        <input id="protect-one" aria-label="Handle, link or id" data-i18n-aria="protect.oneAria" data-i18n-placeholder="protect.onePlaceholder" placeholder="@handle, link or id" />
+        <button id="protect-add-one" class="btn" type="button" data-i18n="protect.add">Add</button>
+      </div>
+      <div id="protect-list" class="chips"></div>
+    </div>
+  </section>
+
+  <details id="history" class="block details">
+    <summary>
+      <span data-i18n="history.title">What has been done</span>
+      <span class="badge" id="hist-total">0</span>
+    </summary>
+    <div class="details-body">
+      <div id="hist-list"></div>
+      <div class="btn-row">
+        <button id="data-export" class="btn" type="button" data-i18n="history.export">Export to file</button>
+        <button id="data-import" class="btn" type="button" data-i18n="history.import">Import from file</button>
+      </div>
+      <p class="fine" data-i18n="history.note">Clearing history does not bring anything back — the extension just stops remembering those records. The data file moves history and lists to another browser.</p>
+    </div>
+  </details>
+
+  <details id="help" class="block details">
+    <summary><span data-i18n="help.title">How it works</span></summary>
+    <div class="details-body">
+      <ol class="steps">
+        <li data-i18n="help.step1">Turn on the modules you need — they will appear on open X tabs by themselves.</li>
+        <li data-i18n="help.step2">Open the X page you want to clean: timeline, Following or messages.</li>
+        <li data-i18n="help.step3">A panel appears in the bottom right corner: start, progress, Stop and the log live there.</li>
+      </ol>
+      <p class="fine" data-i18n-html="help.privacy">Data stays in your browser. The protect list and action history are kept in the extension storage, and requests go only to x.com. There are no servers, tokens or analytics.</p>
+      <p class="fine" data-i18n-html="help.limits">Mass actions hit X limits: 50–100 unfollows per run is fine, thousands a day means a temporary block. Everything deleted is permanent.</p>
+    </div>
+  </details>
+
+  <input type="file" id="data-file" aria-label="Cleanup for X data file" data-i18n-aria="data.fileAria" accept=".json,application/json" hidden />
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <footer>
+    <span id="version"></span>
+    <span class="privacy" data-i18n="footer.privacy">no servers · data never leaves the browser</span>
+  </footer>
+
+  <script src="../shared/i18n.js"></script>
+  <script src="../shared/modules.js"></script>
+  <script src="../shared/history.js"></script>
+  <script src="../shared/protect.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

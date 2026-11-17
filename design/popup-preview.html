@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cleanup for X — предпросмотр попапа</title>
+  <style>
+    /* Страница только для разработки: показывает попап без установки расширения.
+       Данные демонстрационные — их подставляет сам попап, когда chrome.* нет. */
+    :root {
+      --bg: #171614;
+      --card: #201f1c;
+      --line: rgba(242, 238, 230, .12);
+      --text: #f2eee6;
+      --muted: #a49d91;
+      --accent: #d97757;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 26px 18px;
+      background: radial-gradient(90% 60% at 50% 0%, rgba(217, 119, 87, .16), transparent 60%), var(--bg);
+      color: var(--text);
+      font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+    }
+    .banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(242, 238, 230, .05);
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+    .banner i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      font-style: normal;
+    }
+    .lang { display: inline-flex; gap: 4px; margin-left: 8px; }
+    .lang button {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 1px 8px;
+      font: 650 10.5px system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .lang button:hover { color: var(--text); border-color: var(--accent); }
+    .stage {
+      width: 372px;
+      max-width: 100%;
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .45);
+      overflow: hidden;
+    }
+    iframe {
+      display: block;
+      width: 372px;
+      height: 596px;
+      border: 0;
+      background: #f7f4ee;
+    }
+    .hint {
+      max-width: 372px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+    .hint code {
+      color: var(--text);
+      background: rgba(242, 238, 230, .06);
+      border-radius: 5px;
+      padding: 1px 5px;
+      font-size: 10.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner"><i></i>Предпросмотр интерфейса · данные демонстрационные</div>
+  <div class="stage">
+    <iframe id="preview-frame" src="../popup/popup.html" title="Cleanup for X popup"></iframe>
+  </div>
+  <script>
+    // Переключатель языка только для предпросмотра: попап читает ?lang=.
+    document.querySelectorAll('[data-lang]').forEach(кнопка => {
+      кнопка.addEventListener('click', () => {
+        document.getElementById('preview-frame').src =
+          '../popup/popup.html?lang=' + кнопка.dataset.lang;
+      });
+    });
+  </script>
+  <p class="hint">
+    Так попап выглядит в Chrome. Настоящие данные появятся после установки расширения —
+    здесь <code>chrome.storage</code> недоступен, и попап показывает демо-пример.
+  </p>
+</body>
+</html>

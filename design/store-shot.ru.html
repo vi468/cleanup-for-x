@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>Cleanup for X — карточка для магазина</title>
+  <style>
+    /* Заготовка скриншота 1280×800 для Chrome Web Store: попап и док на тёплой подложке. */
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1280px; height: 800px; overflow: hidden; }
+    body {
+      font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+      color: #1f1d1a;
+      background:
+        radial-gradient(80% 70% at 100% 0%, rgba(201, 100, 66, .18), transparent 60%),
+        radial-gradient(60% 60% at 0% 100%, rgba(201, 100, 66, .10), transparent 55%),
+        #f7f4ee;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      padding: 56px 60px;
+    }
+    .left { flex: none; }
+    .left img {
+      display: block;
+      width: 320px;
+      border-radius: 18px;
+      box-shadow: 0 26px 60px rgba(31, 29, 26, .22), 0 2px 6px rgba(31, 29, 26, .08);
+    }
+    .right { min-width: 0; flex: 1; max-width: 520px; }
+    .mark {
+      display: inline-grid;
+      place-items: center;
+      width: 44px; height: 44px;
+      border-radius: 13px;
+      background: linear-gradient(145deg, #c96442, #a94e31 78%);
+      color: #fffdf8;
+      font-weight: 700; font-size: 15px; letter-spacing: .5px;
+      box-shadow: 0 10px 24px rgba(201, 100, 66, .3);
+    }
+    h1 { margin: 18px 0 4px; font-size: 40px; line-height: 1.08; letter-spacing: -.6px; }
+    h1 span { color: #c96442; }
+    .sub { margin: 0 0 22px; font-size: 18px; color: #6f685c; }
+    ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    li { display: flex; gap: 10px; align-items: flex-start; font-size: 16px; color: #3a362f; }
+    li > span { flex: 1; }
+    li b { font-weight: 650; }
+    li::before {
+      content: "";
+      flex: none;
+      width: 8px; height: 8px;
+      margin-top: 8px;
+      border-radius: 50%;
+      background: #c96442;
+    }
+    .foot { margin-top: 26px; font-size: 13px; color: #8a8275; }
+    /* Док обрезан по своим границам: в исходнике вокруг него белое поле. */
+    .dock {
+      flex: none;
+      width: 300px;
+      height: 340px;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #f7f4ee;
+      box-shadow: 0 22px 50px rgba(31, 29, 26, .18), 0 2px 6px rgba(31, 29, 26, .06);
+    }
+    .dock img {
+      display: block;
+      width: 421px;
+      height: 421px;
+      margin-left: -122px;
+      margin-top: -97px;
+    }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <img src="../docs/popup.ru.png" alt="Попап Cleanup for X" />
+  </div>
+  <div class="dock"><img src="../docs/dock.ru.png" alt="Док Cleanup for X" /></div>
+  <div class="right">
+    <span class="mark">CX</span>
+    <h1>Cleanup for X<br /><span>чистка аккаунта X</span></h1>
+    <p class="sub">Семь инструментов в одном попапе. Всё в твоей сессии X.</p>
+    <ul>
+      <li><span><b>Твиты, репосты, цитаты и лайки</b> — по одному запросу, с историей сделанного</span></li>
+      <li><span><b>Переписки и подписки</b> — с защитой от лишнего и живым прогрессом</span></li>
+      <li><span><b>Без серверов и токенов</b> — данные не покидают браузер</span></li>
+    </ul>
+    <div class="foot">Работает в фоне: вкладку можно закрыть. Лимиты X соблюдаются.</div>
+  </div>
+</body>
+</html>

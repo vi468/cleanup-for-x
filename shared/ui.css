@@ -1,0 +1,444 @@
+/* ---------------------------------------------------------------------------
+   Cleanup for X — общий вид панелей на странице.
+   Всё с префиксом xc-, чтобы не задеть вёрстку X.
+   --------------------------------------------------------------------------- */
+:root {
+  color-scheme: light dark;
+
+  --xc-bg: rgba(255, 253, 248, .96);
+  --xc-bg-2: rgba(31, 29, 26, .045);
+  --xc-bg-3: rgba(31, 29, 26, .08);
+  --xc-line: rgba(31, 29, 26, .10);
+  --xc-line-2: rgba(31, 29, 26, .20);
+  --xc-track: rgba(31, 29, 26, .12);
+  --xc-text: #1f1d1a;
+  --xc-muted: #726b5f;
+  --xc-dim: #877f72;
+  --xc-accent: #c96442;
+  --xc-accent-soft: rgba(201, 100, 66, .14);
+  --xc-on-accent: #fffdf8;
+  --xc-ok: #94651f;
+  --xc-ok-soft: rgba(148, 101, 31, .12);
+  --xc-danger: #a53f3f;
+  --xc-danger-soft: rgba(165, 63, 63, .12);
+  --xc-shadow: 0 1px 2px rgba(31, 29, 26, .06), 0 18px 50px rgba(31, 29, 26, .16);
+  --xc-radius: 18px;
+  --xc-radius-sm: 12px;
+  --xc-font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --xc-bg: rgba(38, 37, 34, .94);
+    --xc-bg-2: rgba(242, 238, 230, .05);
+    --xc-bg-3: rgba(242, 238, 230, .085);
+    --xc-line: rgba(242, 238, 230, .10);
+    --xc-line-2: rgba(242, 238, 230, .18);
+    --xc-track: rgba(242, 238, 230, .10);
+    --xc-text: #f2eee6;
+    --xc-muted: #a49d91;
+    --xc-dim: #8e867a;
+    --xc-accent: #d97757;
+    --xc-accent-soft: rgba(217, 119, 87, .18);
+    --xc-on-accent: #241a16;
+    --xc-ok: #e0b06a;
+    --xc-ok-soft: rgba(224, 176, 106, .14);
+    --xc-danger: #e58a8a;
+    --xc-danger-soft: rgba(229, 138, 138, .14);
+    --xc-shadow: 0 1px 2px rgba(0, 0, 0, .2), 0 12px 34px rgba(0, 0, 0, .34);
+  }
+}
+
+/* --- док: один блок на все модули ---------------------------------------- */
+#xc-dock {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147483647;
+  width: 340px;
+  max-width: calc(100vw - 36px);
+  display: flex;
+  flex-direction: column;
+  color: var(--xc-text);
+  font: 13px/1.45 var(--xc-font);
+  background: var(--xc-bg);
+  border: 1px solid var(--xc-line);
+  border-radius: var(--xc-radius);
+  box-shadow: var(--xc-shadow);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  overflow: hidden;
+}
+
+/* Тема дока — как у страницы X (Default / Dim / Lights out), а не как у системы. */
+#xc-dock[data-xc-theme="light"] {
+  color-scheme: light;
+  --xc-bg: rgba(255, 253, 248, .97);
+  --xc-bg-2: rgba(31, 29, 26, .045);
+  --xc-bg-3: rgba(31, 29, 26, .08);
+  --xc-line: rgba(31, 29, 26, .10);
+  --xc-line-2: rgba(31, 29, 26, .20);
+  --xc-track: rgba(31, 29, 26, .12);
+  --xc-text: #1f1d1a;
+  --xc-muted: #726b5f;
+  --xc-dim: #877f72;
+  --xc-accent: #c96442;
+  --xc-accent-soft: rgba(201, 100, 66, .15);
+  --xc-on-accent: #fffdf8;
+  --xc-ok: #5c7350;
+  --xc-danger: #a8412f;
+  --xc-shadow: 0 1px 2px rgba(31, 29, 26, .06), 0 18px 50px rgba(31, 29, 26, .16);
+}
+#xc-dock[data-xc-theme="dark"] {
+  color-scheme: dark;
+  --xc-bg: rgba(38, 37, 34, .95);
+  --xc-bg-2: rgba(242, 238, 230, .05);
+  --xc-bg-3: rgba(242, 238, 230, .085);
+  --xc-line: rgba(242, 238, 230, .10);
+  --xc-line-2: rgba(242, 238, 230, .18);
+  --xc-track: rgba(242, 238, 230, .10);
+  --xc-text: #f2eee6;
+  --xc-muted: #a49d91;
+  --xc-dim: #8e867a;
+  --xc-accent: #d97757;
+  --xc-accent-soft: rgba(217, 119, 87, .19);
+  --xc-on-accent: #241a16;
+  --xc-ok: #a3b784;
+  --xc-danger: #e08a76;
+  --xc-shadow: 0 1px 2px rgba(0, 0, 0, .2), 0 16px 44px rgba(0, 0, 0, .38);
+}
+
+.xc-dock-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--xc-line);
+}
+.xc-dock-mark {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font: 700 10px/1 var(--xc-font);
+  letter-spacing: .4px;
+  color: var(--xc-on-accent);
+  background: linear-gradient(145deg, var(--xc-accent), #a94e31 78%);
+}
+.xc-dock-title { font-size: 13px; font-weight: 650; letter-spacing: .1px; }
+/* Строка «что идёт»: видна и в свёрнутом доке. */
+.xc-dock-status {
+  min-width: 0;
+  max-width: 150px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--xc-accent-soft);
+  color: var(--xc-accent);
+  font-size: 10px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.xc-dock-status[hidden] { display: none; }
+.xc-dock-status[data-tone="bad"] { background: var(--xc-danger-soft); color: var(--xc-danger); }
+.xc-dock-spacer { flex: 1; }
+.xc-dock-btn {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--xc-muted);
+  cursor: pointer;
+}
+.xc-dock-btn:hover { background: var(--xc-bg-2); color: var(--xc-text); }
+
+.xc-dock-tabs {
+  display: flex;
+  gap: 1px;
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--xc-line);
+}
+.xc-dock-tabs button {
+  appearance: none;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 1px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--xc-dim);
+  font: 650 10px var(--xc-font);
+  letter-spacing: .1px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s ease, color .15s ease;
+}
+.xc-dock-tabs button svg { width: 14px; height: 14px; display: block; }
+.xc-dock-tabs button:hover { background: var(--xc-bg-2); color: var(--xc-muted); }
+.xc-dock-tabs button[aria-selected="true"] {
+  background: var(--xc-accent-soft);
+  color: var(--xc-accent);
+  border-color: var(--xc-accent-soft);
+}
+
+.xc-dock-body {
+  padding: 12px;
+  max-height: min(60vh, 480px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.xc-dock-body::-webkit-scrollbar { width: 8px; }
+.xc-dock-body::-webkit-scrollbar-thumb {
+  background: var(--xc-line-2);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.xc-dock-log { border-top: 1px solid var(--xc-line); font-size: 10.5px; color: var(--xc-dim); }
+.xc-dock-log > summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+}
+.xc-dock-log > summary::-webkit-details-marker { display: none; }
+.xc-dock-log-right { display: flex; align-items: center; gap: 9px; }
+.xc-dock-log ul { list-style: none; margin: 0; padding: 0 12px 9px; display: flex; flex-direction: column; gap: 3px; }
+.xc-dock-log li { display: flex; gap: 8px; padding-top: 3px; border-top: 1px dashed var(--xc-line); }
+.xc-dock-log time { flex: none; font-variant-numeric: tabular-nums; }
+.xc-dock-log li.bad { color: var(--xc-danger); }
+.xc-dock-log li.ok { color: var(--xc-ok); }
+.xc-dock-link {
+  border: 0;
+  background: transparent;
+  color: var(--xc-dim);
+  font: 600 10px var(--xc-font);
+  padding: 0;
+  cursor: pointer;
+}
+.xc-dock-link:hover { color: var(--xc-danger); }
+
+.xc-dock.is-collapsed .xc-dock-tabs,
+.xc-dock.is-collapsed .xc-dock-body,
+.xc-dock.is-collapsed .xc-dock-log { display: none; }
+
+/* Панель внутри дока — просто содержимое: рамку и тень даёт сам док. */
+#xc-dock .xc-panel {
+  width: auto;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+#xc-dock .xc-panel--narrow { width: auto; }
+#xc-dock .xc-head { margin-bottom: 9px; }
+#xc-dock .xc-head .xc-title { display: none; }
+
+.xc-panel {
+  width: 320px;
+  max-width: calc(100vw - 36px);
+  padding: 14px;
+  box-sizing: border-box;
+  color: var(--xc-text);
+  font: 13px/1.45 var(--xc-font);
+  background: var(--xc-bg);
+  border: 1px solid var(--xc-line);
+  border-radius: var(--xc-radius);
+  box-shadow: var(--xc-shadow);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
+.xc-panel--narrow { width: 268px; }
+
+/* Пока списка нет, карточки «0 / 0» и пустая полоса только сбивают с толку. */
+.xc-panel[data-empty="1"] .xc-cards,
+.xc-panel[data-empty="1"] .xc-bar,
+.xc-panel[data-empty="1"] .xc-meta { display: none; }
+.xc-panel[data-empty="1"] .xc-status { margin-top: 2px; }
+
+/* Если дока на странице нет (тесты, отладка), панель всё равно встаёт в угол. */
+body > .xc-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147483647;
+  max-height: calc(100vh - 36px);
+  overflow-y: auto;
+}
+
+.xc-collapsed > *:not(.xc-head) { display: none; }
+.xc-collapsed { padding-bottom: 13px; }
+
+.xc-head {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.xc-title { font-size: 14.5px; font-weight: 650; letter-spacing: .1px; }
+
+.xc-chip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: .2px;
+  text-transform: lowercase;
+  color: var(--xc-muted);
+  background: var(--xc-bg-2);
+  border: 1px solid var(--xc-line);
+  white-space: nowrap;
+}
+.xc-chip[data-tone="run"] { color: var(--xc-accent); background: var(--xc-accent-soft); border-color: var(--xc-accent); }
+.xc-chip[data-tone="done"] { color: var(--xc-ok); background: var(--xc-ok-soft); border-color: var(--xc-ok); }
+
+.xc-cards { display: flex; gap: 8px; margin-bottom: 10px; }
+.xc-card {
+  flex: 1;
+  padding: 8px 11px;
+  border-radius: var(--xc-radius-sm);
+  background: var(--xc-bg-2);
+  border: 1px solid var(--xc-line);
+}
+.xc-num { font-size: 20px; font-weight: 650; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.xc-label { margin-top: 1px; font-size: 11px; color: var(--xc-muted); }
+
+.xc-bar {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--xc-track);
+  margin-bottom: 7px;
+}
+.xc-bar > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--xc-accent);
+  transition: width .35s ease, background .3s ease;
+}
+.xc-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--xc-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.xc-status {
+  min-height: 32px;
+  margin-bottom: 11px;
+  font-size: 12px;
+  color: var(--xc-muted);
+}
+
+.xc-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.xc-row:last-child { margin-bottom: 0; }
+
+.xc-btn {
+  appearance: none;
+  border: 1px solid var(--xc-line);
+  background: var(--xc-bg-2);
+  color: var(--xc-text);
+  border-radius: 999px;
+  padding: 8px 13px;
+  font: 600 12.5px var(--xc-font);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .06s ease, opacity .15s ease;
+}
+.xc-btn:hover { background: var(--xc-bg-3); border-color: var(--xc-line-2); }
+.xc-btn:active { transform: scale(.985); }
+.xc-btn:disabled { cursor: default; opacity: .45; }
+.xc-btn--wide { flex: 1; }
+.xc-btn--primary {
+  border-color: var(--xc-accent);
+  background: var(--xc-accent);
+  color: var(--xc-on-accent);
+  font-weight: 700;
+  box-shadow: 0 6px 18px var(--xc-accent-soft);
+}
+.xc-btn--primary:hover { filter: brightness(1.06); }
+.xc-btn--ghost { background: transparent; }
+.xc-btn--quiet {
+  background: transparent;
+  border-style: dashed;
+  color: var(--xc-dim);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+}
+.xc-btn--small { padding: 5px 10px; font-size: 11.5px; }
+
+.xc-details { margin: 10px 0; border-top: 1px solid var(--xc-line); padding-top: 10px; }
+.xc-details > summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--xc-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.xc-details > summary::-webkit-details-marker { display: none; }
+.xc-details > summary::after { content: "›"; font-size: 15px; transform: rotate(90deg); transition: transform .18s ease; }
+.xc-details[open] > summary::after { transform: rotate(-90deg); }
+.xc-details-body { display: flex; flex-direction: column; gap: 7px; margin-top: 9px; }
+
+.xc-note { margin: 0; font-size: 11px; color: var(--xc-dim); line-height: 1.5; }
+.xc-details-body > .xc-btn { width: 100%; }
+.xc-panel .xc-note + .xc-btn { margin-top: 1px; }
+.xc-note b { color: var(--xc-muted); font-weight: 600; }
+.xc-foot { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--xc-line); font-size: 11px; color: var(--xc-dim); }
+
+.xc-toggle { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--xc-muted); cursor: pointer; }
+.xc-toggle input {
+  appearance: none;
+  width: 30px;
+  height: 18px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--xc-track);
+  position: relative;
+  cursor: pointer;
+  transition: background .18s ease;
+}
+.xc-toggle input::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .18s ease;
+}
+.xc-toggle input:checked { background: var(--xc-accent); }
+.xc-toggle input:checked::after { transform: translateX(12px); }

@@ -1,0 +1,136 @@
+# Changelog
+
+**English** · [Русский](CHANGELOG.ru.md)
+
+## 1.14.0 — 16.11.2026
+
+- the project is now **Cleanup for X** (it was X Cleaner): the name states the
+  function, and it no longer collides with the paid x-cleaner.app;
+- new icon monogram **CX**; the popup header, the dock header and the store
+  screenshots follow the new name;
+- storage keys and settings are unchanged: updating keeps the protect list, the
+  action history and the module toggles;
+- no functional changes in this release.
+
+## 1.13.6 — 15.11.2026
+
+- before every “Stuck likes” run its history is cleared: a row that stayed after
+  an X error or came back after F5 is no longer skipped as “already done” — the
+  next run processes it again;
+- this matters because older versions could record ids whose like was actually
+  still there.
+
+## 1.13.5 — 15.11.2026
+
+- “Stuck likes” moved back from clicks to the request pair: clicks on the X page
+  work only sometimes, so the pair (`FavoriteTweet` → `UnfavoriteTweet`) goes to
+  the server at once, without waiting for the button state;
+- after a confirmed answer the row is removed from the list so you can see it was
+  processed;
+- if a row returns after a reload, that is X state, not the extension; there is
+  no separate “clear likes history” — History → Likes is the same likes list, and
+  the like itself has to be removed.
+
+## 1.13.4 — 15.11.2026
+
+- “Stuck likes” do the pair faster: they wait only for the heart to fill and
+  remove it right away. A slow pair does not clean X history;
+- a row may leave the list only after a page reload — that is X behaviour, while
+  the history is cleaned by the fast pair;
+- the click test is updated.
+
+## 1.13.3 — 15.11.2026
+
+- “Stuck likes” switched to clicking the page: the panel presses the heart one by
+  one, waits for the state to change and the row to disappear, then moves on;
+- removes both stuck rows and remaining likes;
+- no background queue for this module: everything happens visibly on the page;
+- the test button is gone to avoid confusion.
+
+## 1.13.2 — 15.11.2026
+
+- “Stuck likes” walk the whole Likes list: a stuck row gets a like and loses it
+  right away, a card with a remaining like is simply unliked;
+- if the unlike after a successful like returns a 404 with a body, it is retried:
+  previously such an answer was treated as “already gone” and the like stayed;
+- hints and docs updated for this mode.
+
+## 1.13.1 — 15.11.2026
+
+- “Stuck likes” now run synchronously, like a hand: the panel scrolls the list,
+  puts and immediately removes a like for each post, waits for the answer and
+  moves on. Keep the tab open;
+- scrolling works when X scrolls the list inside a nested container rather than
+  the window;
+- the “Test on one record” hint no longer misleads: it talks about the visible
+  part of the list and points to “Find and remove”.
+
+## 1.13.0 — 15.11.2026
+
+- new “Stuck likes” module: scrolls History → Likes, finds posts that stayed in
+  the list without a like and, for each one, puts and immediately removes the like
+  (`FavoriteTweet` → `UnfavoriteTweet`) so the row disappears. Collection runs in
+  the open tab, the cleanup runs in the background: once collection is done you
+  can close the tab, and the result is visible after a page reload;
+- the stuck-like detector handles both X markups: the old one (`data-testid`
+  `like`/`unlike`) and the new `x-web` 2026 one (`article` without `data-testid`,
+  `aria-pressed` and `icon-heart` inside the button);
+- seven module cards and seven history rows in the popup.
+
+## 1.12.1 — 15.11.2026
+
+- new extension icon in the project palette: a warm terracotta rounded square
+  with the XC monogram, transparent PNG at 16/48/128 px, source in
+  `design/icon.html`.
+
+## 1.12.0 — 15.11.2026
+
+- the whole interface is bilingual: English by default, Russian turns on
+  automatically when the browser language is Russian;
+- one string dictionary, `shared/i18n.js`: popup, dock, module panels, background
+  queue statuses and plural forms;
+- localized extension name and description (`_locales/en`, `_locales/ru`);
+- shorter dock tab labels: Tweets / Reposts / Quotes / Likes / Unfollow / DMs;
+- bilingual documentation: `README.md` + `README.ru.md`, `CHANGELOG.md` +
+  `CHANGELOG.md` + `CHANGELOG.ru.md` и политика конфиденциальности;
+- English screenshots for the README and the store listing, Russian ones next to
+  them.
+
+## 1.11.0 — 15.11.2026
+
+First public release.
+
+**Popup**
+- redesigned for newcomers: six module cards with plain descriptions, a “where it
+  works” line and an “Open” button that goes to the right X page;
+- live data: history, protect list, toggles and queue progress arrive through
+  `chrome.storage.onChanged` and tab events, with no popup reload;
+- an “In progress” block with progress, percentage, time estimate and “stop”;
+- “Who to leave alone” and “What has been done” with live counters; data export
+  and import merge lists and carry loaded archives.
+
+**X page**
+- one dock for all modules: tabs, event log, “stop all”, work status in the header
+  (visible when collapsed too);
+- dock theme follows the X page;
+- no more meaningless “0 / 0” cards on an empty panel;
+- job panels update by storage subscription instead of a 1.2 s poll.
+
+**Modules**
+- delete your tweets, undo reposts (from archive and while scrolling), delete
+  quotes, remove likes, clean up DMs, unfollow non-followers;
+- background queues survive tab close and service worker unload;
+- “Undo while scrolling” skips already undone reposts without a five-minute wait;
+- “Test on one record” no longer looks harmless: explicit label and confirmation;
+- DMs open the menu without clicking a link and do not navigate away;
+- the protect list is no longer seeded from code: a new user starts empty, an
+  existing list is preserved.
+
+**Reliability and privacy**
+- the `tabs` permission was removed — only `storage` and `cookies` remain;
+- fixed read-write races in queues and history, duplicate requests for the same
+  id, lost ids on concurrent writes;
+- fresh X `queryId` values are picked up from page bundles and passed to the
+  background;
+- storage migrations no longer crash on old or broken data;
+- 7 test files and a linter without warnings.

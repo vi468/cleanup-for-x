@@ -1,0 +1,14 @@
+{
+  "name": {
+    "message": "Cleanup for X"
+  },
+  "shortName": {
+    "message": "Cleanup"
+  },
+  "description": {
+    "message": "Удаление твитов, репостов, цитат и лайков, чистка ЛС, отписка от невзаимных."
+  },
+  "actionTitle": {
+    "message": "Cleanup for X"
+  }
+}

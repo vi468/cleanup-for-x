@@ -1,0 +1,18 @@
+{
+  "name": "cleanup-for-x",
+  "private": true,
+  "type": "module",
+  "description": "Dev-only package.json: Node tests and lint; Chrome ignores it.",
+  "version": "1.14.0",
+  "license": "MIT",
+  "scripts": {
+    "test": "node test/engine.test.js && node test/history.test.js && node test/protect.test.js && node test/store.test.js && node test/dom.test.js && node test/ghost.test.js && node test/modules.test.js && node test/i18n.test.js && node test/popup.test.js",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1"
+  },
+  "dependencies": {
+    "eslint": "^10.15.0"
+  }
+}

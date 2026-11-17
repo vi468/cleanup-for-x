@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_name__",
+  "short_name": "__MSG_shortName__",
+  "version": "1.14.0",
+  "description": "__MSG_description__",
+  "minimum_chrome_version": "114",
+  "permissions": [
+    "storage",
+    "cookies"
+  ],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://twitter.com/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "__MSG_name__"
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "shared/i18n.js",
+        "shared/modules.js",
+        "shared/history.js",
+        "shared/protect.js",
+        "shared/xqid.js",
+        "shared/dock.js",
+        "shared/archive-job.js",
+        "content/gate.js",
+        "content/tweets.js",
+        "content/reposts.js",
+        "content/quotes.js",
+        "content/likes.js",
+        "content/ghost-likes.js",
+        "content/dms.js",
+        "content/unfollow.js"
+      ],
+      "run_at": "document_idle",
+      "css": [
+        "shared/ui.css"
+      ]
+    }
+  ],
+  "default_locale": "en"
+}
