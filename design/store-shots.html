@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cleanup for X — store screenshots 2–4</title>
+<!-- Дополнительные кадры 1280×800 для карточки магазина, отдельно для EN и RU.
+     ?frame=2|3|4&lang=en|ru; рендерятся скриптом, см. .tmp/shots. -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+    color: #1f1d1a;
+    background:
+      radial-gradient(80% 70% at 100% 0%, rgba(201, 100, 66, .18), transparent 60%),
+      radial-gradient(60% 60% at 0% 100%, rgba(201, 100, 66, .10), transparent 55%),
+      #f7f4ee;
+    display: flex; align-items: center; gap: 48px; padding: 56px 64px;
+  }
+  .left { flex: none; }
+  .left > img { display: block; width: 330px; border-radius: 18px; box-shadow: 0 26px 60px rgba(31,29,26,.22), 0 2px 6px rgba(31,29,26,.08); }
+  .dock { position: relative; width: 330px; height: 370px; overflow: hidden; border-radius: 18px; background: #fff; box-shadow: 0 26px 60px rgba(31,29,26,.18); }
+  .dock img { position: absolute; width: 463px; height: auto; right: -14px; bottom: -14px; }
+  .right { min-width: 0; flex: 1; max-width: 560px; }
+  .mark { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 13px;
+    background: linear-gradient(145deg, #c96442, #a94e31 78%); color: #fffdf8; font-weight: 700; font-size: 15px; letter-spacing: .5px;
+    box-shadow: 0 10px 24px rgba(201,100,66,.3); }
+  h1 { margin: 18px 0 6px; font-size: 42px; line-height: 1.08; letter-spacing: -.6px; }
+  h1 span { color: #c96442; }
+  .sub { margin: 0 0 24px; font-size: 18px; color: #6f685c; }
+  ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  li { display: flex; gap: 10px; align-items: flex-start; font-size: 17px; color: #3a362f; }
+  li b { font-weight: 650; }
+  li::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 9px; border-radius: 50%; background: #c96442; }
+  .foot { margin-top: 28px; font-size: 13px; color: #8a8275; }
+  .big { font-size: 46px; line-height: 1.1; letter-spacing: -.8px; margin: 0 0 8px; }
+  .big span { color: #c96442; }
+  .plain { display: block; }
+</style>
+</head>
+<body>
+<div class="left" id="left"></div>
+<div class="right" id="right"></div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const frame = q.get('frame') || '2';
+  const ru = (q.get('lang') || 'en').startsWith('ru');
+
+  const T = {
+    en: {
+      repliesTitle: 'Delete replies',
+      repliesSub: 'Your own replies to other people, not the whole profile.',
+      repliesItems: [
+        '<b>From the archive:</b> tweets.js gives the full list, including replies no longer in the timeline.',
+        '<b>Without the archive:</b> open the profile’s Replies tab and scroll — replies go one by one.',
+        '<b>Regular tweets and reposts stay</b>; they have their own modules.'
+      ],
+      repliesFoot: 'Runs in the background: you can close the tab. X rate limits are respected.',
+      backgroundTitle: 'Close the tab',
+      backgroundSub: 'The queue lives in the service worker, not in the page.',
+      backgroundItems: [
+        '<b>Unfollows, replies, reposts, quotes and likes</b> keep going after the tab is closed.',
+        '<b>Progress, history and the protect list</b> stay in the extension storage.',
+        '<b>Rate limits</b> are waited out, not bypassed: on 429 the queue pauses and continues.'
+      ],
+      backgroundFoot: 'Stuck likes and DMs read the open page, so that tab stays open.',
+      privacyTitle: 'No server. <span>No account.</span>',
+      privacySub: 'There is nothing to sign up for and nothing to leak.',
+      privacyItems: [
+        '<b>Requests go only to x.com</b>, with the session your browser already has.',
+        '<b>No analytics, no trackers, no API key</b> — the code is plain JavaScript.',
+        '<b>MIT license</b>, English and Russian, picked by your system language.'
+      ],
+      privacyFoot: 'Not affiliated with X Corp. Use it within X rules.',
+      privacyHeadingTitle: 'No server.'
+    },
+    ru: {
+      repliesTitle: 'Удаление ответов',
+      repliesSub: 'Свои ответы чужим постам — не весь профиль.',
+      repliesItems: [
+        '<b>По архиву:</b> tweets.js даёт полный список, включая ответы, которых уже нет в ленте.',
+        '<b>Без архива:</b> открой вкладку «Ответы» в профиле и листай — ответы уходят по одному.',
+        '<b>Обычные твиты и репосты остаются</b>: у них свои модули.'
+      ],
+      repliesFoot: 'Работает в фоне: вкладку можно закрыть. Лимиты X соблюдаются.',
+      backgroundTitle: 'Вкладку можно закрыть',
+      backgroundSub: 'Очередь живёт в service worker, а не в странице.',
+      backgroundItems: [
+        '<b>Отписка, ответы, репосты, цитаты и лайки</b> продолжаются после закрытия вкладки.',
+        '<b>Прогресс, история и список «кого не трогать»</b> лежат в хранилище расширения.',
+        '<b>Лимиты</b> пережидаются, а не обходятся: на 429 очередь встаёт на паузу и продолжает.'
+      ],
+      backgroundFoot: '«Зависшие» лайки и переписки идут по странице — там вкладка должна быть открыта.',
+      privacyTitle: 'Без сервера. <span>Без аккаунта.</span>',
+      privacySub: 'Регистрироваться негде, и утекать нечему.',
+      privacyItems: [
+        '<b>Запросы идут только на x.com</b> — в твоей же сессии браузера.',
+        '<b>Ни аналитики, ни трекеров, ни API-ключа</b>: код — обычный JavaScript.',
+        '<b>Лицензия MIT</b>, два языка, выбор по языку системы.'
+      ],
+      privacyFoot: 'Не связано с X Corp. Используй в рамках правил X.',
+      privacyHeadingTitle: 'Без сервера.'
+    }
+  }[ru ? 'ru' : 'en'];
+
+  const left = document.getElementById('left');
+  const right = document.getElementById('right');
+  const photo = name => { const img = new Image(); img.src = '../docs/' + name; return img; };
+
+  const list = items => '<ul>' + items.map(x => `<li><span>${x}</span></li>`).join('') + '</ul>';
+
+  if (frame === '2') {
+    left.innerHTML = '<div class="dock" id="dockbox"></div>';
+    document.getElementById('dockbox').appendChild(photo(ru ? 'dock.ru.png' : 'dock.png'));
+    right.innerHTML = `<span class="mark">CX</span>
+      <h1>${T.repliesTitle}</h1><p class="sub">${T.repliesSub}</p>${list(T.repliesItems)}
+      <p class="foot">${T.repliesFoot}</p>`;
+  } else if (frame === '3') {
+    left.appendChild(photo(ru ? 'popup.ru.png' : 'popup.png'));
+    right.innerHTML = `<span class="mark">CX</span>
+      <h1>${T.backgroundTitle}</h1><p class="sub">${T.backgroundSub}</p>${list(T.backgroundItems)}
+      <p class="foot">${T.backgroundFoot}</p>`;
+  } else {
+    left.style.display = 'none';
+    right.innerHTML = `<span class="mark">CX</span>
+      <p class="big">${T.privacyTitle}</p><p class="sub">${T.privacySub}</p>${list(T.privacyItems)}
+      <p class="foot">${T.privacyFoot}</p>`;
+  }
+</script>
+</body>
+</html>

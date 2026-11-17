@@ -21,7 +21,7 @@ The dark theme is in [`docs/popup-dark.png`](docs/popup-dark.png), the whole pop
 in [`docs/popup-full.png`](docs/popup-full.png).
 
 The interface is bilingual: English by default, Russian automatically when the
-browser language is Russian. Both languages live in `shared/i18n.js`; the popup
+system or browser language is Russian. Both languages live in `shared/i18n.js`; the popup
 preview can be forced with `?lang=ru` or `?lang=en`.
 
 ## Contents
@@ -380,8 +380,8 @@ both known markups: the old one and `x-web` 2026.
 
 The interface dictionary is `shared/i18n.js`. Each module adds its own strings
 next to the code with `XCI18n.добавить({ ru: {...}, en: {...} })`. English is the
-default; Russian turns on automatically when the browser language starts with
-`ru`. You can force it in the preview with `?lang=ru` / `?lang=en`. Manifest
+default; Russian turns on automatically when the system or browser language
+starts with `ru`. You can force it in the preview with `?lang=ru` / `?lang=en`. Manifest
 strings are localized with `_locales/en` and `_locales/ru`.
 
 ## License
