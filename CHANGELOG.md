@@ -2,6 +2,17 @@
 
 **English** · [Русский](CHANGELOG.ru.md)
 
+## 1.15.2 — 18.11.2026
+
+- scrolling no longer trusts the action history when a card is still on screen:
+  the id is sent again with a “force” flag, so the queue asks X instead of
+  skipping silently. A 200 deletes, a 404 with a body confirms the record is
+  gone — either way the counts tell the truth;
+- this covers the case where a wrong id once landed in the history (a quoted
+  post instead of the reply) and every later pass reported “already deleted”
+  while the reply was still there;
+- same for reposts, which share the scroll code path.
+
 ## 1.15.1 — 18.11.2026
 
 - replies: the id is taken from your own status link, not from an embedded
