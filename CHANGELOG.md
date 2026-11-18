@@ -2,6 +2,12 @@
 
 **English** · [Русский](CHANGELOG.ru.md)
 
+## 1.17.1 — 18.11.2026
+
+- the protect list can now be switched off for one module without touching the
+  global setting: each module panel has a “respect the protect list” switch.
+  The exception lives in `chrome.storage.sync` and applies only to that module.
+
 ## 1.17.0 — 18.11.2026
 
 - the protect list now works in every module, not only unfollow, and is on by

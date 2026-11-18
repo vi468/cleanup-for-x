@@ -189,7 +189,7 @@ XC.модуль('ghostlikes', () => {
       if (!id || видели.has(id)) continue;
       // Пост аккаунта из списка «кого не трогать» не трогаем: временный лайк
       // всё равно пришёл бы ему уведомлением.
-      if (window.XProtect && XProtect.защищён({ ник: авторКарточки(article) })) continue;
+      if (window.XProtect && XProtect.защищён({ ник: авторКарточки(article) }, 'ghostlikes')) continue;
       видели.add(id);
       иды.push(id);
     }

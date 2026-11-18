@@ -73,7 +73,7 @@ XC.модуль('quotes', () => {
         if (window.XProtect && XProtect.защищён({
           ник: автор && автор.screen_name,
           id: автор && (автор.id_str || автор.id)
-        })) { защищено++; continue; }
+        }, 'quotes')) { защищено++; continue; }
         цитаты.push(String(t.id_str));
         continue;
       }

@@ -99,7 +99,7 @@ XC.модуль('replies', () => {
       if (window.XProtect && XProtect.защищён({
         ник: твит.in_reply_to_screen_name,
         id: твит.in_reply_to_user_id_str
-      })) { защищено++; continue; }
+      }, 'replies')) { защищено++; continue; }
 
       // Один и тот же твит встречается в архивных частях дважды — id уникален.
       if (видели.has(твит.id_str)) continue;
@@ -239,7 +239,7 @@ XC.модуль('replies', () => {
       обработано.add(id);
 
       // Ответ защищённому аккаунту не трогаем — и не отправляем в фон.
-      if (window.XProtect && XProtect.защищён({ ник: комуОтвечает(найдено.article) })) {
+      if (window.XProtect && XProtect.защищён({ ник: комуОтвечает(найдено.article) }, 'replies')) {
         защищено++;
         сообщить(t('replies.protected', { n: защищено }));
         continue;

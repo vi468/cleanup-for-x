@@ -97,7 +97,7 @@ XC.модуль('reposts', () => {
       if (window.XProtect && XProtect.защищён({
         ник: автор && автор.screen_name,
         id: автор && (автор.id_str || автор.id)
-      })) { защищено++; continue; }
+      }, 'reposts')) { защищено++; continue; }
 
       // Один и тот же репост встречается в архивных частях дважды — id уникален.
       if (видели.has(t.id_str)) continue;
@@ -266,7 +266,7 @@ XC.модуль('reposts', () => {
       обработано.add(id);
 
       // Оригинал защищённого аккаунта не трогаем.
-      if (window.XProtect && XProtect.защищён({ ник: авторОригинала(найдено.article) })) {
+      if (window.XProtect && XProtect.защищён({ ник: авторОригинала(найдено.article) }, 'reposts')) {
         защищено++;
         сообщить(t('reposts.protected', { n: защищено }));
         continue;

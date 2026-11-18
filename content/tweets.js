@@ -23,7 +23,8 @@ XC.модуль('tweets', () => {
       'tweets.panelTitle': 'Удаление твитов',
       'tweets.active': 'работает',
       'tweets.panelStatus': 'Кнопка «Удалить» стоит у каждого твоего твита в ленте, профиле и поиске. У чужих и у репостов её нет.',
-      'tweets.foot': 'твоих твитов с кнопкой на странице: {n}'
+      'tweets.foot': 'твоих твитов с кнопкой на странице: {n}',
+      'tweets.protectScope': 'учитывать список «кого не трогать»',
     },
     en: {
       'tweets.delete': 'Delete',
@@ -153,7 +154,7 @@ XC.модуль('tweets', () => {
       const info = infoOf(art);
       if (!info || info.handle !== own) return;          // чужое не трогаем
       // Ответ аккаунту из списка «кого не трогать» кнопку не получает.
-      if (window.XProtect && XProtect.защищён({ ник: комуОтвечает(art) })) {
+      if (window.XProtect && XProtect.защищён({ ник: комуОтвечает(art) }, 'tweets')) {
         art.setAttribute('data-my-delete', '1');
         return;
       }
@@ -244,10 +245,28 @@ XC.модуль('tweets', () => {
           <div class="xc-chip" data-tone="done">${t('tweets.active')}</div>
         </div>
         <div class="xc-status">${t('tweets.panelStatus')}</div>
+        <label class="xc-toggle" style="margin-top:8px" title="${t('tweets.protectScope')}">
+          <input type="checkbox" data-защита-модуля>
+          <span>${t('tweets.protectScope')}</span>
+        </label>
         <div class="xc-foot" data-счёт></div>`;
       const счёт = панель.querySelector('[data-счёт]');
       обновитьСчёт = () => { счёт.textContent = t('tweets.foot', { n: added }); };
       обновитьСчёт();
+      const $защита = панель.querySelector('[data-защита-модуля]');
+      if ($защита && window.XProtect) {
+        $защита.checked = XProtect.дляМодуля('tweets');
+        $защита.disabled = !XProtect.включеноВезде();
+        $защита.addEventListener('change', () => {
+          XProtect.включитьДля('tweets', $защита.checked);
+          // Пересобрать кнопки: у ответов защищённым аккаунтам они появляются
+          // или исчезают сразу, без перезагрузки страницы.
+          for (const art of document.querySelectorAll('article[data-my-delete]')) {
+            art.removeAttribute('data-my-delete');
+          }
+          scan(document.body);
+        });
+      }
       XCDock.регистрировать({ id: 'tweets', титул: t('tweets.tab'), элемент: панель });
     }
 

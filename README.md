@@ -213,6 +213,10 @@ default it applies to every tool, not only unfollow: your replies to those
 accounts, their reposts and quotes are skipped, and their posts are left alone in
 Stuck likes. The “apply to all tools” switch is right there and is on by default.
 
+A single module can opt out without turning the list off globally: each module
+panel on the X page has a “respect the protect list” switch. Clear it and that
+module ignores the list while the rest still follow it.
+
 One limit: the archive file `like.js` stores only like ids, without authors, so
 archive likes cannot be filtered by the protect list; on the Likes page they can.
 

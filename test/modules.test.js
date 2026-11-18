@@ -542,7 +542,21 @@ const загрузитьФайл = async (dom, idИнпута, текст, им�
   assert.match(панельОтветов.querySelector('[data-статус]').textContent, /в файле 1/,
     'ответ защищённому аккаунту не попадает в работу');
   assert.match(панельОтветов.querySelector('[data-статус]').textContent, /из списка защиты: 1/);
+  const тумблер = панельОтветов.querySelector('[data-защита-модуля]');
+  assert.ok(тумблер && тумблер.checked, 'в панели есть тумблер списка защиты и он включён');
   domОтветы.window.close();
+
+  // Исключение для одного модуля: отписка и остальные не затронуты.
+  const domБез = дом();
+  await поднять(domБез, ['../content/replies.js']);
+  await domБез.window.XProtect.готовность;
+  await domБез.window.XProtect.включитьДля('replies', false);
+  await загрузитьФайл(domБез, '__replies_инпут', архивЗащиты(), 'tweets.js');
+  const статусБез = domБез.window.__ответы.панель.querySelector('[data-статус]').textContent;
+  assert.match(статусБез, /в файле 2/, 'с исключением модуль берёт ответ защищённому аккаунту');
+  assert.doesNotMatch(статусБез, /из списка защиты/, 'и не пишет про пропуск по списку');
+  assert.equal(domБез.window.XProtect.дляМодуля('quotes'), true, 'исключение не задевает другие модули');
+  domБез.window.close();
 
   const domЦитаты = дом();
   await поднять(domЦитаты, ['../content/quotes.js']);

@@ -36,6 +36,7 @@
       'archive.hint': 'В X: «Ещё» → «Настройки» → «Скачать архив данных». Придёт письмо со ссылкой на zip: внутри папка <b>data</b>, в ней нужный файл — он указан на кнопке выше.',
       'archive.reset': 'Сбросить загруженный список',
       'archive.testOne': 'Проверить на одной записи',
+      'archive.protectScope': 'учитывать список «кого не трогать»',
       'archive.debug': 'Журнал отладки',
       'archive.debugNote': 'Пишет шаги модуля и ответы X: id, код, состояние счётчиков. Cookie, токенов и текстов в нём нет. Выключен по умолчанию.',
       'archive.logDownload': 'Скачать журнал',
@@ -105,6 +106,7 @@
       'archive.hint': 'In X: More → Settings → Download an archive of your data. You will get an email with a zip: inside there is a <b>data</b> folder with the file named on the button above.',
       'archive.reset': 'Reset the loaded list',
       'archive.testOne': 'Test on one record',
+      'archive.protectScope': 'respect the protect list',
       'archive.debug': 'Debug log',
       'archive.debugNote': 'Records module steps and X responses: id, status code, counters. No cookies, tokens or post texts. Off by default.',
       'archive.logDownload': 'Download log',
@@ -253,6 +255,10 @@
           <button class="xc-btn xc-btn--quiet" data-сброс${безФайла ? ' hidden' : ''}>${t('archive.reset')}</button>
           <button class="xc-btn xc-btn--quiet" data-тест${безТеста ? ' hidden' : ''} disabled>${t('archive.testOne')}</button>
           <p class="xc-note">${t('archive.testNote')}</p>
+          <label class="xc-toggle" style="margin-top:4px" title="${t('archive.protectScope')}">
+            <input type="checkbox" data-защита-модуля>
+            <span>${t('archive.protectScope')}</span>
+          </label>
           <label class="xc-toggle" style="margin-top:4px" title="${t('archive.debugNote')}">
             <input type="checkbox" data-отладка>
             <span>${t('archive.debug')}</span>
@@ -285,6 +291,19 @@
 
     // --- журнал отладки: тумблер, файл, очистка ---------------------------
     const $отладка = $('[data-отладка]');
+    const $защитаМодуля = $('[data-защита-модуля]');
+    const нарисоватьЗащиту = () => {
+      if (!$защитаМодуля || !window.XProtect) return;
+      $защитаМодуля.checked = XProtect.дляМодуля(вид);
+      $защитаМодуля.disabled = !XProtect.включеноВезде();
+    };
+    нарисоватьЗащиту();
+    if ($защитаМодуля) {
+      $защитаМодуля.addEventListener('change', () => {
+        if (!window.XProtect) return;
+        XProtect.включитьДля(вид, $защитаМодуля.checked);
+      });
+    }
     const $логСкачать = $('[data-лог-скачать]');
     const $логОчистить = $('[data-лог-очистить]');
     const журналЕсть = () => !!(window.XCDebug && typeof window.XCDebug.событие === 'function');
