@@ -29,7 +29,6 @@
   XCI18n.добавить({
     ru: {
       'archive.left': 'осталось',
-      'archive.done': 'сделано',
       'archive.nothingRunning': 'ничего не запущено',
       'archive.chooseFile': 'Выбери файл из архива X — покажу, сколько записей нашёл.',
       'archive.nothingInArchive': 'в архиве пока ничего',
@@ -42,13 +41,9 @@
       'archive.logDownload': 'Скачать журнал',
       'archive.logClear': 'Очистить журнал',
       'archive.logSaved': 'журнал сохранён',
-      'archive.debug': 'Debug log',
-      'archive.debugNote': 'Records module steps and X responses: id, status code, counters. No cookies, tokens or post texts. Off by default.',
-      'archive.logDownload': 'Download log',
-      'archive.logClear': 'Clear log',
-      'archive.logSaved': 'log saved',
       'archive.testNote': '«Проверить» — это не примерка: одна запись будет реально обработана. Нужно, чтобы убедиться, что X отвечает 200, а не 404/429.',
       'archive.progress': '{done} из {total} · {percent}%',
+      'archive.doneOf': 'Готово: {done} из {total}',
       'archive.leftTime': ' · осталось ~{time}',
       'archive.finished': ' · завершено',
       'archive.stoppedSuffix': ' · остановлено',
@@ -73,7 +68,7 @@
       'archive.collectStop': 'Остановился: {error}',
       'archive.memory': 'Файл в памяти: {n}, к работе {m}.',
       'archive.freshQid': '{title}: нашёл свежий queryId, отдал фону',
-      'archive.done': 'Готово: {done} из {total}',
+      'archive.done': 'сделано',
       'archive.skipped': ', пропущено {n}',
       'archive.stopped': 'Остановлено: {status}. Уже сделанное не повторится — можно запустить снова.',
       'archive.qidChanged': ' X сменил адрес запроса: свежий нашёл и передал фону — запусти ещё раз.',
@@ -103,7 +98,6 @@
     },
     en: {
       'archive.left': 'left',
-      'archive.done': 'done',
       'archive.nothingRunning': 'nothing is running',
       'archive.chooseFile': 'Pick a file from your X archive — I will show how many records were found.',
       'archive.nothingInArchive': 'nothing in the archive yet',
@@ -118,6 +112,7 @@
       'archive.logSaved': 'log saved',
       'archive.testNote': '“Test” is not a dry run: one record will really be processed. It verifies that X answers 200 rather than 404/429.',
       'archive.progress': '{done} of {total} · {percent}%',
+      'archive.doneOf': 'Done: {done} of {total}',
       'archive.leftTime': ' · ~{time} left',
       'archive.finished': ' · finished',
       'archive.stoppedSuffix': ' · stopped',
@@ -142,7 +137,7 @@
       'archive.collectStop': 'Stopped: {error}',
       'archive.memory': 'File in memory: {n}, {m} to process.',
       'archive.freshQid': '{title}: found a fresh queryId and passed it to the background',
-      'archive.done': 'Done: {done} of {total}',
+      'archive.done': 'done',
       'archive.skipped': ', skipped {n}',
       'archive.stopped': 'Stopped: {status}. Finished work will not repeat — you can start again.',
       'archive.qidChanged': ' X changed the request address: a fresh one was found and passed to the background — start again.',
@@ -581,7 +576,7 @@
       await перечитатьИсторию();
       const готово = ответ.статус === 'готово';
       let текст = готово
-        ? t('archive.done', { done: XCI18n.число(ответ.сделано || 0), total: XCI18n.число(ответ.всего || 0) }) +
+        ? t('archive.doneOf', { done: XCI18n.число(ответ.сделано || 0), total: XCI18n.число(ответ.всего || 0) }) +
           (ответ.пропущено ? t('archive.skipped', { n: ответ.пропущено }) : '')
         : t('archive.stopped', { status: XCI18n.статус(ответ.статус) });
       // 404 у любого вида — повод освежить queryId. У зависших лайков это
