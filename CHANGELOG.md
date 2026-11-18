@@ -2,6 +2,18 @@
 
 **English** · [Русский](CHANGELOG.ru.md)
 
+## 1.17.2 — 18.11.2026
+
+- a 200 response with `errors` in the body is no longer counted as a deletion:
+  X returns code 183 for “not your tweet” or “already gone”, and the queue used
+  to mark the id as done and put it into history. Such a step now goes to
+  `пропущено`, the last error is shown in the panel, and the id is not recorded;
+- replies take the id only from the link to your own post. A card without that
+  link is the conversation context — someone else's tweet that X shows above
+  your reply — and it is skipped. This is what produced the alternation in the
+  log: every reply with a thread above it sent a foreign id, got 200 + 183, and
+  stayed in place while the panel called it deleted.
+
 ## 1.17.1 — 18.11.2026
 
 - the protect list can now be switched off for one module without touching the

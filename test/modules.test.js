@@ -478,6 +478,31 @@ const загрузитьФайл = async (dom, idИнпута, текст, им�
   dom.window.close();
 }
 
+// --- 8д. ответы: контекст чужого треда пропускается -----------------------
+// X показывает над ответом исходный твит чужого автора. Раньше бралась первая
+// ссылка на пост в карточке, DeleteTweet уходил на чужой твит, получал 200 с
+// ошибкой 183, а ответ оставался. Карточка без своей ссылки не наша.
+{
+  const dom = страница('/me/with_replies', `
+    <a data-testid="AppTabBar_Profile_Link" href="/me">Профиль</a>
+    <article data-testid="tweet">
+      <a href="/other/status/999"><time datetime="2026-11-14T09:00:00">14 ноя</time></a>
+    </article>`,
+  { 'защита': { ники: [], id: [] } });
+  dom.window.__XC_ТЕСТ_БЫСТРО = true;
+  dom.window.document.cookie = 'ct0=тест';
+
+  await поднять(dom, ['../content/replies.js']);
+  dom.window.__ответы.панель.querySelector('[data-без-архива]')
+    .dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+  await ждать(250);
+
+  const добавки = dom.window.__сообщения.filter(с => с.type === 'jobs-add' && (с.ids || []).length);
+  assert.deepEqual(добавки.map(с => [...с.ids]), [], 'чужой контекстный твит не отправляется в фон');
+  console.log('ок: ответы — контекст чужого треда не принимается за свой ответ');
+  dom.window.close();
+}
+
 // --- 9. разбор архива: репосты по флагу и по «RT @», без дублей ----------
 {
   const dom = страница('/home', '', { 'защита': { ники: [], id: [] } });

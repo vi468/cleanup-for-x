@@ -131,12 +131,12 @@ XC.модуль('replies', () => {
     const ссылки = [...article.querySelectorAll('a[href*="/status/"]')];
     const своя = ник && ссылки.find(a =>
       String(a.getAttribute('href') || '').toLowerCase().startsWith('/' + ник + '/'));
-    for (const a of [своя, ...ссылки]) {
-      if (!a || !a.querySelector('time')) continue;
-      const m = String(a.getAttribute('href') || '').match(/\/status\/(\d+)/);
-      if (m) return m[1];
-    }
-    return '';
+    // Карточка без ссылки на свой пост — это контекст чужого треда, который
+    // X показывает над ответом. Раньше здесь бралась первая попавшаяся ссылка,
+    // и DeleteTweet уходил на чужой твит: 200 с ошибкой 183, а ответ оставался.
+    if (!своя || !своя.querySelector('time')) return '';
+    const m = String(своя.getAttribute('href') || '').match(/\/status\/(\d+)/);
+    return m ? m[1] : '';
   };
 
   // Вкладка «Ответы» — единственное место, где карточка гарантированно ответ.
