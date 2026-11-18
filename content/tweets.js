@@ -141,10 +141,22 @@ XC.модуль('tweets', () => {
     let added = 0;
     let обновитьСчёт = () => {};     // панель в доке появляется чуть позже
 
+    // Кому отвечает твит: «В ответ @ник» / «Replying to @nick».
+    const комуОтвечает = art => {
+      const текст = String(art.textContent || '').slice(0, 400);
+      const m = текст.match(/(?:В ответ|Replying to)\s+@([A-Za-z0-9_]{1,15})/i);
+      return m ? m[1] : '';
+    };
+
     const decorate = art => {
       if (art.hasAttribute('data-my-delete')) return;
       const info = infoOf(art);
       if (!info || info.handle !== own) return;          // чужое не трогаем
+      // Ответ аккаунту из списка «кого не трогать» кнопку не получает.
+      if (window.XProtect && XProtect.защищён({ ник: комуОтвечает(art) })) {
+        art.setAttribute('data-my-delete', '1');
+        return;
+      }
       const bar = art.querySelector('div[role="group"]');
       if (!bar) return;
       art.setAttribute('data-my-delete', '1');

@@ -2,6 +2,17 @@
 
 **English** · [Русский](CHANGELOG.ru.md)
 
+## 1.17.0 — 18.11.2026
+
+- the protect list now works in every module, not only unfollow, and is on by
+  default: replies to protected accounts, their reposts and quotes are skipped,
+  the Delete button does not appear on replies to them, and stuck likes leave
+  their posts alone;
+- a switch in the protect block turns this off and restores the old behaviour;
+- the panel shows how many records were skipped because of the list, both for
+  archive files and while scrolling;
+- archive likes are the one exception: `like.js` has ids only, no authors.
+
 ## 1.16.0 — 18.11.2026
 
 - new debug log, off by default. A switch in each module panel (“Where to get

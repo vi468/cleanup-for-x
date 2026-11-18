@@ -26,6 +26,8 @@ XC.модуль('reposts', () => {
       'reposts.choose': 'Выбрать tweets.js',
       'reposts.action': 'Отменить',
       'reposts.describe': 'цитат не трогаю: {n} — они в модуле «Отмена цитат»',
+      'reposts.describeProtected': ' · из списка защиты: {n}',
+      'reposts.protected': 'этот аккаунт в списке «кого не трогать»: пропустил {n}',
       'reposts.scrollLabel': 'Отменять при листании',
       'reposts.errorNoArray': 'в файле нет массива твитов — нужен data/tweets.js',
       'reposts.errorJson': 'внутри tweets.js не JSON — возможно, файл обрезан',
@@ -42,6 +44,8 @@ XC.модуль('reposts', () => {
       'reposts.choose': 'Choose tweets.js',
       'reposts.action': 'Undo',
       'reposts.describe': 'not touching {n} quotes — they are in the Quotes module',
+      'reposts.describeProtected': ' · protected accounts: {n}',
+      'reposts.protected': 'this account is on the protect list: skipped {n}',
       'reposts.scrollLabel': 'Undo while scrolling',
       'reposts.errorNoArray': 'no tweets array in the file — data/tweets.js is needed',
       'reposts.errorJson': 'tweets.js does not contain JSON — the file may be truncated',
@@ -73,6 +77,7 @@ XC.модуль('reposts', () => {
     const видели = new Set();
     let цитат = 0;
     let обычных = 0;
+    let защищено = 0;
 
     for (const item of данные) {
       const t = item && (item.tweet || item);
@@ -86,12 +91,20 @@ XC.модуль('reposts', () => {
         else обычных++;
         continue;
       }
+      // Репост защищённого аккаунта не снимаем: список «кого не трогать»
+      // по умолчанию действует во всех модулях.
+      const автор = t.retweeted_status && t.retweeted_status.user;
+      if (window.XProtect && XProtect.защищён({
+        ник: автор && автор.screen_name,
+        id: автор && (автор.id_str || автор.id)
+      })) { защищено++; continue; }
+
       // Один и тот же репост встречается в архивных частях дважды — id уникален.
       if (видели.has(t.id_str)) continue;
       видели.add(t.id_str);
       ids.push(String(t.id_str));
     }
-    return { ids, цитат, обычных };
+    return { ids, цитат, обычных, защищено };
   };
 
   // ------------------------------------------------------------------------
@@ -166,14 +179,23 @@ XC.модуль('reposts', () => {
     return /^(?:вы|ваш[аи]?|ты|you)\s/i.test(текст) && подписьРепоста.test(текст.slice(0, 80));
   };
 
+  // Автор оригинала — из ссылки на пост внутри карточки.
+  const авторОригинала = article => {
+    for (const ссылка of article.querySelectorAll('a[href*="/status/"]')) {
+      const m = String(ссылка.getAttribute('href') || '').match(/^\/([A-Za-z0-9_]{1,15})\/status\//);
+      if (m) return m[1];
+    }
+    return '';
+  };
+
   const первыйНовыйРепост = (свой, раздел, обработано) => {
     for (const article of document.querySelectorAll('article[data-testid="tweet"]')) {
       if (!этоРепост(article, свой, раздел)) continue;
       const id = idТвита(article);
       if (!id || обработано.has(id)) continue;
-      return id;
+      return { id, article };
     }
-    return '';
+    return null;
   };
 
   /** Ждёт, пока фон реально отработает отправленный id. */
@@ -221,12 +243,14 @@ XC.модуль('reposts', () => {
     let пусто = 0;
     let снято = 0;
     let пропущено = 0;
+    let защищено = 0;
 
     for (;;) {
       if (!продолжать()) throw new Error(t('reposts.stopped'));
       if (Date.now() > предел) break;
 
-      const id = первыйНовыйРепост(свой, активныйРаздел(), обработано);
+      const найдено = первыйНовыйРепост(свой, активныйРаздел(), обработано);
+      const id = найдено ? найдено.id : '';
 
       if (!id) {
         // Снимать нечего — значит дальше по списку. Пока не появится новая карточка.
@@ -240,6 +264,13 @@ XC.модуль('reposts', () => {
       }
 
       обработано.add(id);
+
+      // Оригинал защищённого аккаунта не трогаем.
+      if (window.XProtect && XProtect.защищён({ ник: авторОригинала(найдено.article) })) {
+        защищено++;
+        сообщить(t('reposts.protected', { n: защищено }));
+        continue;
+      }
 
       // Карточка на экране, а id в истории — доверять истории нельзя: в неё
       // когда-то мог попасть чужой id, а X мог не убрать карточку из кэша.
@@ -279,9 +310,10 @@ XC.модуль('reposts', () => {
       await sleep(пауза);
     }
 
-    журнал('итог', { удалено: снято, пропущено });
-    if (снято || пропущено) {
-      return t('reposts.summary', { n: снято, m: пропущено });
+    журнал('итог', { удалено: снято, пропущено, защищено });
+    if (снято || пропущено || защищено) {
+      return t('reposts.summary', { n: снято, m: пропущено }) +
+        (защищено ? t('reposts.describeProtected', { n: защищено }) : '');
     }
     throw new Error(t('reposts.none'));
   };
@@ -293,7 +325,8 @@ XC.модуль('reposts', () => {
     кнопкаФайла: t('reposts.choose'),
     действие: t('reposts.action'),
     разобрать,
-    описать: разбор => t('reposts.describe', { n: разбор.цитат }),
+    описать: разбор => t('reposts.describe', { n: разбор.цитат }) +
+      (разбор.защищено ? t('reposts.describeProtected', { n: разбор.защищено }) : ''),
     безАрхива: { подпись: t('reposts.scrollLabel'), собрать: отменятьПриЛистании },
     темп: 1200
   });

@@ -170,6 +170,15 @@ XC.модуль('ghostlikes', () => {
     return !!idТвита(article);
   };
 
+  /** Автор карточки: первая ссылка вида «/ник» без /status/. */
+  const авторКарточки = article => {
+    for (const a of article.querySelectorAll('a[href]')) {
+      const m = String(a.getAttribute('href') || '').match(/^\/([A-Za-z0-9_]{1,15})\/?$/);
+      if (m && !СЛУЖЕБНЫЕ.has(m[1].toLowerCase())) return m[1];
+    }
+    return '';
+  };
+
   /** Уникальные id карточек, которые сейчас отрисованы. */
   const видимыеПосты = () => {
     const иды = [];
@@ -178,6 +187,9 @@ XC.модуль('ghostlikes', () => {
       if (!этоПост(article)) continue;
       const id = idТвита(article);
       if (!id || видели.has(id)) continue;
+      // Пост аккаунта из списка «кого не трогать» не трогаем: временный лайк
+      // всё равно пришёл бы ему уведомлением.
+      if (window.XProtect && XProtect.защищён({ ник: авторКарточки(article) })) continue;
       видели.add(id);
       иды.push(id);
     }

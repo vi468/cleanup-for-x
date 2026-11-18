@@ -26,6 +26,8 @@ XC.модуль('replies', () => {
       'replies.choose': 'Выбрать tweets.js',
       'replies.action': 'Удалить ответы',
       'replies.describe': 'обычных твитов {o} и репостов {r} не трогаю',
+      'replies.describeProtected': ' · из списка защиты: {n}',
+      'replies.protected': 'этот аккаунт в списке «кого не трогать»: пропустил {n}',
       'replies.scrollLabel': 'Удалять при листании',
       'replies.errorNoArray': 'в файле нет массива твитов — нужен data/tweets.js из архива',
       'replies.errorJson': 'внутри tweets.js не JSON — возможно, файл обрезан',
@@ -42,6 +44,8 @@ XC.модуль('replies', () => {
       'replies.choose': 'Choose tweets.js',
       'replies.action': 'Delete replies',
       'replies.describe': 'leaving {o} regular tweets and {r} reposts alone',
+      'replies.describeProtected': ' · protected accounts: {n}',
+      'replies.protected': 'this account is on the protect list: skipped {n}',
       'replies.scrollLabel': 'Delete while scrolling',
       'replies.errorNoArray': 'no tweets array in the file — data/tweets.js from the archive is needed',
       'replies.errorJson': 'tweets.js does not contain JSON — the file may be truncated',
@@ -73,6 +77,7 @@ XC.модуль('replies', () => {
     const видели = new Set();
     let обычных = 0;
     let репостов = 0;
+    let защищено = 0;
 
     for (const row of записи) {
       const твит = row && (row.tweet || row);
@@ -89,13 +94,20 @@ XC.модуль('replies', () => {
         !!твит.in_reply_to_screen_name;
       if (!ответ) { обычных++; continue; }
 
+      // Ответ защищённому аккаунту не удаляем: список «кого не трогать»
+      // по умолчанию действует во всех модулях.
+      if (window.XProtect && XProtect.защищён({
+        ник: твит.in_reply_to_screen_name,
+        id: твит.in_reply_to_user_id_str
+      })) { защищено++; continue; }
+
       // Один и тот же твит встречается в архивных частях дважды — id уникален.
       if (видели.has(твит.id_str)) continue;
       видели.add(твит.id_str);
       ids.push(String(твит.id_str));
     }
 
-    return { ids, обычных, репостов };
+    return { ids, обычных, репостов, защищено };
   };
 
   // ------------------------------------------------------------------------
@@ -137,6 +149,13 @@ XC.модуль('replies', () => {
     return табы.some(таб => /ответ|repl/i.test((таб.textContent || '').trim()));
   };
 
+  // Кому отвечает карточка: «В ответ @ник» / «Replying to @nick».
+  const комуОтвечает = article => {
+    const текст = String(article.textContent || '').slice(0, 400);
+    const m = текст.match(/(?:В ответ|Replying to)\s+@([A-Za-z0-9_]{1,15})/i);
+    return m ? m[1] : '';
+  };
+
   const первыйНовыйОтвет = (обработано, толькоответы, ник) => {
     for (const article of document.querySelectorAll('article[data-testid="tweet"]')) {
       // Вне вкладки «Ответы» карточки не считаем ответами: в обычном профиле
@@ -144,9 +163,9 @@ XC.модуль('replies', () => {
       if (!толькоответы) continue;
       const id = idТвита(article, ник);
       if (!id || обработано.has(id)) continue;
-      return id;
+      return { id, article };
     }
-    return '';
+    return null;
   };
 
   /** Ждёт, пока фон реально отработает отправленный id. */
@@ -197,12 +216,14 @@ XC.модуль('replies', () => {
     let пусто = 0;
     let удалено = 0;
     let пропущено = 0;
+    let защищено = 0;
 
     for (;;) {
       if (!продолжать()) throw new Error(t('replies.stopped'));
       if (Date.now() > предел) break;
 
-      const id = первыйНовыйОтвет(обработано, толькоответы, ник);
+      const найдено = первыйНовыйОтвет(обработано, толькоответы, ник);
+      const id = найдено ? найдено.id : '';
 
       if (!id) {
         // Снимать нечего — значит дальше по списку. Пока не появится новая карточка.
@@ -216,6 +237,13 @@ XC.модуль('replies', () => {
       }
 
       обработано.add(id);
+
+      // Ответ защищённому аккаунту не трогаем — и не отправляем в фон.
+      if (window.XProtect && XProtect.защищён({ ник: комуОтвечает(найдено.article) })) {
+        защищено++;
+        сообщить(t('replies.protected', { n: защищено }));
+        continue;
+      }
 
       // Карточка на экране, а id в истории — доверять истории нельзя: в неё
       // когда-то мог попасть чужой id, а X мог не убрать карточку из кэша.
@@ -256,9 +284,10 @@ XC.модуль('replies', () => {
       await sleep(пауза);
     }
 
-    журнал('итог', { удалено, пропущено });
-    if (удалено || пропущено) {
-      return t('replies.summary', { n: удалено, m: пропущено });
+    журнал('итог', { удалено, пропущено, защищено });
+    if (удалено || пропущено || защищено) {
+      return t('replies.summary', { n: удалено, m: пропущено }) +
+        (защищено ? t('replies.describeProtected', { n: защищено }) : '');
     }
     throw new Error(t('replies.none'));
   };
@@ -270,7 +299,8 @@ XC.модуль('replies', () => {
     кнопкаФайла: t('replies.choose'),
     действие: t('replies.action'),
     разобрать,
-    описать: разбор => t('replies.describe', { o: разбор.обычных, r: разбор.репостов }),
+    описать: разбор => t('replies.describe', { o: разбор.обычных, r: разбор.репостов }) +
+      (разбор.защищено ? t('replies.describeProtected', { n: разбор.защищено }) : ''),
     безАрхива: { подпись: t('replies.scrollLabel'), собрать: удалятьПриЛистании },
     темп: 1500
   });

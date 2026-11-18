@@ -19,6 +19,7 @@ XC.модуль('quotes', () => {
       'quotes.choose': 'Выбрать tweets.js',
       'quotes.action': 'Удалить цитаты',
       'quotes.describe': 'репостов {r} и обычных твитов {o} не трогаю',
+      'quotes.describeProtected': ' · из списка защиты: {n}',
       'quotes.errorNoArray': 'в файле нет массива твитов — нужен data/tweets.js из архива',
       'quotes.errorJson': 'внутри tweets.js не JSON — возможно, файл обрезан',
       'quotes.errorNotArray': 'ожидал массив твитов, а внутри не массив'
@@ -28,6 +29,7 @@ XC.модуль('quotes', () => {
       'quotes.choose': 'Choose tweets.js',
       'quotes.action': 'Delete quotes',
       'quotes.describe': 'leaving {r} reposts and {o} regular tweets alone',
+      'quotes.describeProtected': ' · protected accounts: {n}',
       'quotes.errorNoArray': 'no tweets array in the file — data/tweets.js from the archive is needed',
       'quotes.errorJson': 'tweets.js does not contain JSON — the file may be truncated',
       'quotes.errorNotArray': 'expected an array of tweets, got something else'
@@ -51,6 +53,7 @@ XC.модуль('quotes', () => {
     const цитаты = [];
     let репостов = 0;
     let обычных = 0;
+    let защищено = 0;
 
     for (const row of записи) {
       const t = row && (row.tweet || row);
@@ -64,11 +67,20 @@ XC.модуль('quotes', () => {
       const цитата = t.is_quote_status === true ||
         !!t.quoted_status_id_str ||
         !!(t.quoted_status_permalink && t.quoted_status_permalink.url);
-      if (цитата) { цитаты.push(String(t.id_str)); continue; }
+      if (цитата) {
+        // Цитата чужого поста: если автор в списке «кого не трогать» — не трогаем.
+        const автор = t.quoted_status && t.quoted_status.user;
+        if (window.XProtect && XProtect.защищён({
+          ник: автор && автор.screen_name,
+          id: автор && (автор.id_str || автор.id)
+        })) { защищено++; continue; }
+        цитаты.push(String(t.id_str));
+        continue;
+      }
       обычных++;
     }
 
-    return { ids: [...new Set(цитаты)], репостов, обычных };
+    return { ids: [...new Set(цитаты)], репостов, обычных, защищено };
   };
 
   const панель = XJobPanel.создать({
@@ -78,7 +90,8 @@ XC.модуль('quotes', () => {
     кнопкаФайла: t('quotes.choose'),
     действие: t('quotes.action'),
     разобрать,
-    описать: разбор => t('quotes.describe', { r: разбор.репостов, o: разбор.обычных }),
+    описать: разбор => t('quotes.describe', { r: разбор.репостов, o: разбор.обычных }) +
+      (разбор.защищено ? t('quotes.describeProtected', { n: разбор.защищено }) : ''),
     темп: 1500
   });
 

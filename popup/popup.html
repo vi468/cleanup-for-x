@@ -44,6 +44,13 @@
       <button id="protect-toggle" class="link-btn" type="button" aria-expanded="false" aria-controls="protect-body" data-i18n="common.list">list</button>
     </div>
     <div id="protect-body" hidden>
+      <div class="protect-scope">
+        <span data-i18n="protect.everywhere">apply to all tools, not just unfollow</span>
+        <label class="switch">
+          <input id="protect-everywhere" type="checkbox" checked aria-label="Apply the protect list to all tools" />
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
       <textarea id="protect-text" rows="3" aria-label="Text with links, handles or ids" data-i18n-aria="protect.textAria" data-i18n-placeholder="protect.placeholder" placeholder="Paste any text: links, @handles, names or ids — accounts will be extracted"></textarea>
       <div class="btn-row">
         <button id="protect-add-text" class="btn btn-solid" type="button" data-i18n="protect.addText">Add from text</button>

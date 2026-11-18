@@ -208,7 +208,13 @@ you after it was generated, X will not show that in the file.
 
 ## Who to leave alone
 
-The unfollow protect list lives in the popup: the **“Who to leave alone”** block.
+The protect list lives in the popup: the **“Who to leave alone”** block. By
+default it applies to every tool, not only unfollow: your replies to those
+accounts, their reposts and quotes are skipped, and their posts are left alone in
+Stuck likes. The “apply to all tools” switch is right there and is on by default.
+
+One limit: the archive file `like.js` stores only like ids, without authors, so
+archive likes cannot be filtered by the protect list; on the Likes page they can.
 
 - **Add from text** — paste anything: `x.com/…` and `twitter.com/…` links
   (including `intent/follow?screen_name=`), `@handles`, bare handles line by

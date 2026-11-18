@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
 import {
-  userCell, твит, архивТвитов, архивТвитовКрайние, архивОтветовКрайние,
+  userCell, твит, архивТвитов, архивТвитовКрайние, архивОтветовКрайние, архивЗащиты,
   архивЛайков, архивЛайковКрайние, архивЛайковБитый,
   архивПодписок, архивПодписчиков
 } from './fixtures.js';
@@ -524,6 +524,71 @@ const загрузитьФайл = async (dom, idИнпута, текст, им�
   assert.ok(старт, 'ответы должны отдать очередь в фон');
   assert.deepEqual([...старт.ids], ['3001', '3002', '3003']);
   console.log('ок: разбор архива — ответы по in_reply_to всех трёх видов');
+  dom.window.close();
+}
+
+// --- 9в. список «кого не трогать» действует во всех модулях ---------------
+// Ответы, цитаты и репосты защищённого аккаунта не попадают в очередь,
+// а в статусе видно, сколько записей пропущено из-за списка.
+{
+  const список = { ники: ['friend'], id: [] };
+  const дом = () => страница('/home', '', { 'защита': список });
+
+  const domОтветы = дом();
+  await поднять(domОтветы, ['../content/replies.js']);
+  await domОтветы.window.XProtect.готовность;
+  await загрузитьФайл(domОтветы, '__replies_инпут', архивЗащиты(), 'tweets.js');
+  const панельОтветов = domОтветы.window.__ответы.панель;
+  assert.match(панельОтветов.querySelector('[data-статус]').textContent, /в файле 1/,
+    'ответ защищённому аккаунту не попадает в работу');
+  assert.match(панельОтветов.querySelector('[data-статус]').textContent, /из списка защиты: 1/);
+  domОтветы.window.close();
+
+  const domЦитаты = дом();
+  await поднять(domЦитаты, ['../content/quotes.js']);
+  await domЦитаты.window.XProtect.готовность;
+  await загрузитьФайл(domЦитаты, '__quotes_инпут', архивЗащиты(), 'tweets.js');
+  const панельЦитат = domЦитаты.window.__цитаты.панель;
+  assert.match(панельЦитат.querySelector('[data-статус]').textContent, /в файле 1/,
+    'цитата защищённого автора не попадает в работу');
+  domЦитаты.window.close();
+
+  const domРепосты = дом();
+  await поднять(domРепосты, ['../content/reposts.js']);
+  await domРепосты.window.XProtect.готовность;
+  await загрузитьФайл(domРепосты, '__reposts_инпут', архивЗащиты(), 'tweets.js');
+  const панельРепостов = domРепосты.window.__репосты.панель;
+  assert.match(панельРепостов.querySelector('[data-статус]').textContent, /в файле 1/,
+    'репост защищённого автора не попадает в работу');
+  domРепосты.window.close();
+
+  console.log('ок: список «кого не трогать» фильтрует ответы, цитаты и репосты');
+}
+
+// --- 9г. в листании ответ защищённому аккаунту не отправляется в фон ------
+{
+  const dom = страница('/me/with_replies', `
+    <a data-testid="AppTabBar_Profile_Link" href="/me">Профиль</a>
+    <article data-testid="tweet">
+      <span>В ответ <a href="/friend">@friend</a></span>
+      <div role="group"></div>
+      <a href="/me/status/4101"><time datetime="2026-11-14T10:00:00">14 ноя</time></a>
+    </article>`,
+  { 'защита': { ники: ['friend'], id: [] } });
+  dom.window.__XC_ТЕСТ_БЫСТРО = true;
+  dom.window.document.cookie = 'ct0=тест';
+
+  await поднять(dom, ['../content/replies.js']);
+  await dom.window.XProtect.готовность;
+  dom.window.__ответы.панель.querySelector('[data-без-архива]')
+    .dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+  await ждать(300);
+
+  const добавки = dom.window.__сообщения.filter(с => с.type === 'jobs-add' && (с.ids || []).length);
+  assert.deepEqual(добавки.map(с => [...с.ids]), [], 'ответ защищённому аккаунту не уходит в фон');
+  const низ = dom.window.__ответы.панель.querySelector('[data-низ]').textContent;
+  assert.match(низ, /списка защиты/, 'итог говорит, сколько пропущено из-за списка');
+  console.log('ок: в листании ответ защищённому аккаунту пропускается');
   dom.window.close();
 }
 

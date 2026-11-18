@@ -63,6 +63,19 @@ export const архивОтветовКрайние = () => {
   return 'window.YTD.tweets.part0 = ' + JSON.stringify(записи) + ';';
 };
 
+/** data/tweets.js с защищёнными и обычными авторами: ответы, цитаты, репосты. */
+export const архивЗащиты = () => {
+  const записи = [
+    { tweet: { id_str: '4001', full_text: 'ответ другу', in_reply_to_screen_name: 'friend' } },
+    { tweet: { id_str: '4002', full_text: 'ответ человеку', in_reply_to_screen_name: 'someone' } },
+    { tweet: { id_str: '4003', full_text: 'цитата друга', is_quote_status: true, quoted_status: { user: { screen_name: 'friend' } } } },
+    { tweet: { id_str: '4004', full_text: 'цитата человека', is_quote_status: true, quoted_status: { user: { screen_name: 'someone' } } } },
+    { tweet: { id_str: '4005', retweeted: true, retweeted_status: { user: { screen_name: 'friend' } } } },
+    { tweet: { id_str: '4006', retweeted: true, retweeted_status: { user: { screen_name: 'someone' } } } }
+  ];
+  return 'window.YTD.tweets.part0 = ' + JSON.stringify(записи) + ';';
+};
+
 /** data/like.js из архива X. */
 export const архивЛайков = сколько => {
   const записи = Array.from({ length: сколько }, (_, и) => ({ like: { tweetId: String(9000 + и) } }));

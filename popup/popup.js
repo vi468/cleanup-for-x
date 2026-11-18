@@ -36,7 +36,8 @@
       'jobs.stopThisTitle': 'Остановить это задание',
       'jobs.noticeBody': '{status}. Уже сделанное не повторится — можно запустить снова.',
       'protect.title': 'Кого не трогать',
-      'protect.subtitle': 'этих аккаунтов не коснётся отписка',
+      'protect.subtitle': 'их не коснутся отписка, ответы, репосты и цитаты',
+      'protect.everywhere': 'применять ко всем инструментам',
       'protect.textAria': 'Текст со ссылками, никами или id',
       'protect.placeholder': 'Вставь любой текст: ссылки, @ники, ники или id — вытащу аккаунты',
       'protect.addText': 'Добавить из текста',
@@ -81,7 +82,8 @@
       'jobs.stopThisTitle': 'Stop this job',
       'jobs.noticeBody': '{status}. Finished work will not repeat — you can start again.',
       'protect.title': 'Who to leave alone',
-      'protect.subtitle': 'these accounts will not be unfollowed',
+      'protect.subtitle': 'they are skipped by unfollow, replies, reposts and quotes',
+      'protect.everywhere': 'apply to all tools, not just unfollow',
       'protect.textAria': 'Text with links, handles or ids',
       'protect.placeholder': 'Paste any text: links, @handles, names or ids — accounts will be extracted',
       'protect.addText': 'Add from text',
@@ -722,6 +724,19 @@
     нарисоватьЗащиту();
     сообщить(t('protect.cleared'));
   };
+
+  // Список «кого не трогать» по умолчанию действует во всех модулях.
+  const $защитаВезде = $('#protect-everywhere');
+  if ($защитаВезде && естьChrome) {
+    chrome.storage.sync.get('защита_везде', данные => {
+      $защитаВезде.checked = !(данные && данные['защита_везде'] === false);
+    });
+    $защитаВезде.addEventListener('change', () => {
+      const включено = $защитаВезде.checked;
+      chrome.storage.sync.set({ 'защита_везде': включено });
+      if (window.XProtect) XProtect.включитьВезде(включено);
+    });
+  }
 
   $('#protect-toggle').addEventListener('click', () => {
     const тело = $('#protect-body');
