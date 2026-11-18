@@ -340,6 +340,17 @@
         const вкладка = await window.XCDebug.прочитать();
         let версия = '';
         try { версия = chrome.runtime.getManifest().version; } catch (e) {}
+        let задания = null;
+        try {
+          задания = await new Promise(готово => chrome.storage.local.get('задания', д => готово((д && д['задания']) || null)));
+        } catch (e) {}
+        const настройки = {
+          защитаВезде: window.XProtect ? XProtect.включеноВезде() : null,
+          защитаМодуля: window.XProtect ? XProtect.дляМодуля(вид) : null,
+          отладка: true,
+          темп: опции.темп || null,
+          живых: null
+        };
         const снимок = {
           продукт: 'Cleanup for X',
           версия,
@@ -347,8 +358,10 @@
           страница: location.pathname,
           язык: navigator.language,
           вид,
+          настройки,
           вкладка,
-          фон
+          фон,
+          задания
         };
         const текст = JSON.stringify(снимок, null, 2);
         try {

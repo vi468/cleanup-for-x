@@ -2,6 +2,19 @@
 
 **English** · [Русский](CHANGELOG.ru.md)
 
+## 1.18.0 — 18.11.2026
+
+- the debug log now shows the decision, not just the HTTP code: `удалено`,
+  `отказ` or an error, with the full GraphQL message and code (the 183 was
+  truncated to “You are not author…” and had to be guessed);
+- each scroll card is logged with the context it came from: for replies — whom
+  the card answers and that it was your own link; for reposts — the original
+  author;
+- the downloaded file carries the settings that matter: whether the protect list
+  is on globally and for this module, the queue pace, and the counters of every
+  job at the moment of export;
+- step timings (`мс`) so a slow step is visible.
+
 ## 1.17.2 — 18.11.2026
 
 - a 200 response with `errors` in the body is no longer counted as a deletion:
