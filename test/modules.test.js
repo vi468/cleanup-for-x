@@ -147,6 +147,28 @@ const загрузитьФайл = async (dom, idИнпута, текст, им�
   await ждать(80);
 };
 
+// --- 0. журнал отладки: по умолчанию молчит, секреты вырезает -------------
+{
+  const dom = страница('/home', '', { 'защита': { ники: [], id: [] } });
+  await поднять(dom, ['../shared/debug-log.js']);
+
+  assert.equal(dom.window.XCDebug.включён(), false, 'по умолчанию журнал выключен');
+  await dom.window.XCDebug.событие('проверка', { id: '1' });
+  await ждать(30);
+  assert.equal(dom.window.chrome.storage.local.get('журнал_вкладки', () => {}), undefined,
+    'выключенный журнал ничего не пишет');
+
+  await dom.window.XCDebug.включить(true);
+  await dom.window.XCDebug.событие('проверка', { id: '1', тело: 'ct0=SECRET123 authorization: Bearer abc' });
+  await ждать(40);
+  const журнал = await dom.window.XCDebug.прочитать();
+  assert.equal(журнал.length, 1, 'включённый журнал пишет событие');
+  assert.match(JSON.stringify(журнал), /\*\*\*/, 'секреты заменяются звёздочками');
+  assert.ok(!JSON.stringify(журнал).includes('SECRET123'), 'значение cookie не утекает');
+  console.log('ок: журнал отладки выключен по умолчанию и не пишет секреты');
+  dom.window.close();
+}
+
 // --- 1. твиты: кнопка только у своих --------------------------------------
 {
   const dom = страница('/home', `

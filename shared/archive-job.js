@@ -37,6 +37,16 @@
       'archive.hint': 'В X: «Ещё» → «Настройки» → «Скачать архив данных». Придёт письмо со ссылкой на zip: внутри папка <b>data</b>, в ней нужный файл — он указан на кнопке выше.',
       'archive.reset': 'Сбросить загруженный список',
       'archive.testOne': 'Проверить на одной записи',
+      'archive.debug': 'Журнал отладки',
+      'archive.debugNote': 'Пишет шаги модуля и ответы X: id, код, состояние счётчиков. Cookie, токенов и текстов в нём нет. Выключен по умолчанию.',
+      'archive.logDownload': 'Скачать журнал',
+      'archive.logClear': 'Очистить журнал',
+      'archive.logSaved': 'журнал сохранён',
+      'archive.debug': 'Debug log',
+      'archive.debugNote': 'Records module steps and X responses: id, status code, counters. No cookies, tokens or post texts. Off by default.',
+      'archive.logDownload': 'Download log',
+      'archive.logClear': 'Clear log',
+      'archive.logSaved': 'log saved',
       'archive.testNote': '«Проверить» — это не примерка: одна запись будет реально обработана. Нужно, чтобы убедиться, что X отвечает 200, а не 404/429.',
       'archive.progress': '{done} из {total} · {percent}%',
       'archive.leftTime': ' · осталось ~{time}',
@@ -101,6 +111,11 @@
       'archive.hint': 'In X: More → Settings → Download an archive of your data. You will get an email with a zip: inside there is a <b>data</b> folder with the file named on the button above.',
       'archive.reset': 'Reset the loaded list',
       'archive.testOne': 'Test on one record',
+      'archive.debug': 'Debug log',
+      'archive.debugNote': 'Records module steps and X responses: id, status code, counters. No cookies, tokens or post texts. Off by default.',
+      'archive.logDownload': 'Download log',
+      'archive.logClear': 'Clear log',
+      'archive.logSaved': 'log saved',
       'archive.testNote': '“Test” is not a dry run: one record will really be processed. It verifies that X answers 200 rather than 404/429.',
       'archive.progress': '{done} of {total} · {percent}%',
       'archive.leftTime': ' · ~{time} left',
@@ -236,13 +251,22 @@
         <button class="xc-btn" data-стоп disabled>${t('common.stop')}</button>
       </div>
 
-      <details class="xc-details"${безТеста ? ' hidden' : ''}>
+      <details class="xc-details">
         <summary>${опции.подробнее || t('archive.more')}</summary>
         <div class="xc-details-body">
           ${безФайла ? '' : `<p class="xc-note">${t('archive.hint')}</p>`}
           <button class="xc-btn xc-btn--quiet" data-сброс${безФайла ? ' hidden' : ''}>${t('archive.reset')}</button>
           <button class="xc-btn xc-btn--quiet" data-тест${безТеста ? ' hidden' : ''} disabled>${t('archive.testOne')}</button>
           <p class="xc-note">${t('archive.testNote')}</p>
+          <label class="xc-toggle" style="margin-top:4px" title="${t('archive.debugNote')}">
+            <input type="checkbox" data-отладка>
+            <span>${t('archive.debug')}</span>
+          </label>
+          <div class="xc-row">
+            <button class="xc-btn xc-btn--quiet" data-лог-скачать disabled>${t('archive.logDownload')}</button>
+            <button class="xc-btn xc-btn--quiet" data-лог-очистить disabled>${t('archive.logClear')}</button>
+          </div>
+          <p class="xc-note">${t('archive.debugNote')}</p>
         </div>
       </details>`;
 
@@ -263,6 +287,73 @@
     const $старт = $('[data-старт]');
     const $стоп = $('[data-стоп]');
     const $сброс = $('[data-сброс]');
+
+    // --- журнал отладки: тумблер, файл, очистка ---------------------------
+    const $отладка = $('[data-отладка]');
+    const $логСкачать = $('[data-лог-скачать]');
+    const $логОчистить = $('[data-лог-очистить]');
+    const журналЕсть = () => !!(window.XCDebug && typeof window.XCDebug.событие === 'function');
+    const нарисоватьОтладку = () => {
+      const включён = журналЕсть() && window.XCDebug.включён();
+      if ($отладка) $отладка.checked = включён;
+      if ($логСкачать) $логСкачать.disabled = !включён;
+      if ($логОчистить) $логОчистить.disabled = !включён;
+    };
+    нарисоватьОтладку();
+    if ($отладка) {
+      $отладка.addEventListener('change', async () => {
+        if (!журналЕсть()) return;
+        await window.XCDebug.включить($отладка.checked);
+        нарисоватьОтладку();
+        if ($отладка.checked) window.XCDebug.событие('включён', { вид, страница: location.pathname });
+      });
+    }
+    if ($логОчистить) {
+      $логОчистить.addEventListener('click', async () => {
+        if (!журналЕсть()) return;
+        await window.XCDebug.очистить();
+        статус(t('archive.logClear'));
+      });
+    }
+    if ($логСкачать) {
+      $логСкачать.addEventListener('click', async () => {
+        if (!журналЕсть()) return;
+        const фон = await new Promise(готово => {
+          try {
+            chrome.storage.local.get('журнал_фона', данные => готово((данные && данные['журнал_фона']) || []));
+          } catch (e) { готово([]); }
+        });
+        const вкладка = await window.XCDebug.прочитать();
+        let версия = '';
+        try { версия = chrome.runtime.getManifest().version; } catch (e) {}
+        const снимок = {
+          продукт: 'Cleanup for X',
+          версия,
+          время: new Date().toISOString(),
+          страница: location.pathname,
+          язык: navigator.language,
+          вид,
+          вкладка,
+          фон
+        };
+        const текст = JSON.stringify(снимок, null, 2);
+        try {
+          const блоб = new Blob([текст], { type: 'application/json' });
+          const ссылка = document.createElement('a');
+          ссылка.href = URL.createObjectURL(блоб);
+          ссылка.download = 'cleanup-for-x-debug-' + Date.now() + '.json';
+          документ_append(ссылка);
+          ссылка.click();
+          ссылка.remove();
+          setTimeout(() => { try { URL.revokeObjectURL(ссылка.href); } catch (e) {} }, 5000);
+          статус(t('archive.logSaved'));
+        } catch (e) {
+          статус(String(e && e.message || e));
+        }
+        try { await navigator.clipboard.writeText(текст); } catch (e) {}
+      });
+    }
+    const документ_append = узел => document.body.appendChild(узел);
 
     const статус = текст => { $статус.textContent = текст; };
     let паузаЛимита = false;

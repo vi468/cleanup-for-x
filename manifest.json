@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_name__",
   "short_name": "__MSG_shortName__",
-  "version": "1.15.2",
+  "version": "1.16.0",
   "description": "__MSG_description__",
   "minimum_chrome_version": "114",
   "permissions": [
@@ -33,6 +33,7 @@
         "https://twitter.com/*"
       ],
       "js": [
+        "shared/debug-log.js",
         "shared/i18n.js",
         "shared/modules.js",
         "shared/history.js",

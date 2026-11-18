@@ -2,6 +2,18 @@
 
 **English** · [Русский](CHANGELOG.ru.md)
 
+## 1.16.0 — 18.11.2026
+
+- new debug log, off by default. A switch in each module panel (“Where to get
+  the file…”) starts recording steps: module decisions, record ids, X response
+  codes, queue counters. “Download log” saves a JSON file;
+- no secrets in it: cookies, tokens, headers, post texts and handles are not
+  written, and anything that looks like a secret in an X response is replaced
+  with `***`;
+- the log helps tell apart three cases that look identical in the UI: a card
+  left in the page cache, an id that is really gone, and X answering 404 to a
+  record that still exists.
+
 ## 1.15.2 — 18.11.2026
 
 - scrolling no longer trusts the action history when a card is still on screen:

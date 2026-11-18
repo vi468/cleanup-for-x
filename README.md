@@ -309,6 +309,11 @@ The policy text is in [`docs/privacy.html`](docs/privacy.html).
    place.
 5. **Not sure what is happening.** The dock has a log: recent events with time and
    tone. The popup shows a notice with the reason.
+6. **Something is not deleted, and the panel says “already deleted”.** The panel
+   has a debug log, off by default. Open “Where to get the file and what else you
+   can do” in the panel, switch on “Debug log”, reproduce the problem, then press
+   “Download log”. The file contains module steps, record ids, X response codes
+   and queue counters. Cookies, tokens, headers and post texts are never written.
 
 ## Development
 
