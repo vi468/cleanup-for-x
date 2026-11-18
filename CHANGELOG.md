@@ -2,6 +2,17 @@
 
 **English** · [Русский](CHANGELOG.ru.md)
 
+## 1.15.1 — 18.11.2026
+
+- replies: the id is taken from your own status link, not from an embedded
+  quote. A quote card renders its link earlier, so a reply that quoted someone
+  could send `DeleteTweet` against the quoted post: a 404 went into the history
+  and the visible reply stayed;
+- the scroll summary now stays in the panel and says plainly that cards left on
+  the page are cached until you reload the tab — reposts get the same note;
+- the “already deleted: skipped” line itself is unchanged behaviour: it means
+  the id is in the action history, i.e. it was deleted earlier.
+
 ## 1.15.0 — 17.11.2026
 
 - new module “Delete replies”: takes `tweets.js` from the X archive and removes

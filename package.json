@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "description": "Dev-only package.json: Node tests and lint; Chrome ignores it.",
-  "version": "1.15.0",
+  "version": "1.15.1",
   "license": "MIT",
   "scripts": {
     "test": "node test/engine.test.js && node test/history.test.js && node test/protect.test.js && node test/store.test.js && node test/dom.test.js && node test/ghost.test.js && node test/modules.test.js && node test/i18n.test.js && node test/popup.test.js",

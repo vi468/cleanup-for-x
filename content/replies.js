@@ -29,11 +29,11 @@ XC.модуль('replies', () => {
       'replies.errorNoArray': 'в файле нет массива твитов — нужен data/tweets.js из архива',
       'replies.errorJson': 'внутри tweets.js не JSON — возможно, файл обрезан',
       'replies.errorNotArray': 'ожидал массив твитов, а внутри не массив',
-      'replies.skipped': 'уже удалено ранее: пропустил {n}',
+      'replies.skipped': 'уже удалено: пропустил {n}',
       'replies.stopped': 'остановлено',
       'replies.backgroundFailed': 'фон не смог удалить этот ответ — остановился',
       'replies.working': 'удаляю по одному: удалено {n}',
-      'replies.summary': 'удалено сейчас {n}, уже удалено ранее {m}',
+      'replies.summary': 'удалено {n}, уже удалено ранее {m} — обнови вкладку, карточки в кэше',
       'replies.none': 'не вижу твоих ответов — открой свой профиль, вкладку «Ответы»'
     },
     en: {
@@ -45,11 +45,11 @@ XC.модуль('replies', () => {
       'replies.errorNoArray': 'no tweets array in the file — data/tweets.js from the archive is needed',
       'replies.errorJson': 'tweets.js does not contain JSON — the file may be truncated',
       'replies.errorNotArray': 'expected an array of tweets, got something else',
-      'replies.skipped': 'already deleted earlier: skipped {n}',
+      'replies.skipped': 'already deleted: skipped {n}',
       'replies.stopped': 'stopped',
       'replies.backgroundFailed': 'the background could not delete this reply — stopped',
       'replies.working': 'deleting one by one: {n} deleted',
-      'replies.summary': '{n} deleted now, {m} already deleted earlier',
+      'replies.summary': '{n} deleted, {m} already gone — reload the tab, cards are cached',
       'replies.none': 'I cannot see your replies — open your profile’s Replies tab'
     }
   });
@@ -105,11 +105,25 @@ XC.модуль('replies', () => {
   // ------------------------------------------------------------------------
   const sleep = мс => new Promise(готово => setTimeout(готово, мс));
 
-  const idТвита = article => {
-    const время = article.querySelector('a[href*="/status/"] time');
-    const ссылка = время && время.closest('a');
-    const m = (ссылка && ссылка.getAttribute('href') || '').match(/\/status\/(\d+)/);
-    return m ? m[1] : '';
+  const свойНик = () => {
+    const link = document.querySelector('a[data-testid="AppTabBar_Profile_Link"]');
+    return link ? String(link.getAttribute('href') || '').replace(/^\//, '').toLowerCase() : '';
+  };
+
+  // В карточке ответа может быть вложенный чужой пост (цитата), и его ссылка
+  // стоит в разметке раньше своей. Берём ссылку на свой ник, а чужую — только
+  // если своей нет: иначе DeleteTweet уходил на чужой пост, получал 404 и
+  // запоминал этот id в истории, а видимая карточка оставалась.
+  const idТвита = (article, ник) => {
+    const ссылки = [...article.querySelectorAll('a[href*="/status/"]')];
+    const своя = ник && ссылки.find(a =>
+      String(a.getAttribute('href') || '').toLowerCase().startsWith('/' + ник + '/'));
+    for (const a of [своя, ...ссылки]) {
+      if (!a || !a.querySelector('time')) continue;
+      const m = String(a.getAttribute('href') || '').match(/\/status\/(\d+)/);
+      if (m) return m[1];
+    }
+    return '';
   };
 
   // Вкладка «Ответы» — единственное место, где карточка гарантированно ответ.
@@ -122,12 +136,12 @@ XC.модуль('replies', () => {
     return табы.some(таб => /ответ|repl/i.test((таб.textContent || '').trim()));
   };
 
-  const первыйНовыйОтвет = (обработано, толькоответы) => {
+  const первыйНовыйОтвет = (обработано, толькоответы, ник) => {
     for (const article of document.querySelectorAll('article[data-testid="tweet"]')) {
       // Вне вкладки «Ответы» карточки не считаем ответами: в обычном профиле
       // там лежат и твиты, и репосты, и удалять их этот модуль не должен.
       if (!толькоответы) continue;
-      const id = idТвита(article);
+      const id = idТвита(article, ник);
       if (!id || обработано.has(id)) continue;
       return id;
     }
@@ -165,6 +179,7 @@ XC.модуль('replies', () => {
   const удалятьПриЛистании = async ({ добавить, статус, продолжать, сообщить }) => {
     const обработано = new Set();
     const толькоответы = разделОтветов();
+    const ник = свойНик();
     if (!толькоответы) throw new Error(t('replies.none'));
 
     // Что уже удалено в прошлых прогонах. Такой id фон отфильтрует по истории,
@@ -185,7 +200,7 @@ XC.модуль('replies', () => {
       if (!продолжать()) throw new Error(t('replies.stopped'));
       if (Date.now() > предел) break;
 
-      const id = первыйНовыйОтвет(обработано, толькоответы);
+      const id = первыйНовыйОтвет(обработано, толькоответы, ник);
 
       if (!id) {
         // Снимать нечего — значит дальше по списку. Пока не появится новая карточка.
@@ -231,8 +246,7 @@ XC.модуль('replies', () => {
     }
 
     if (удалено || пропущено) {
-      сообщить(t('replies.summary', { n: удалено, m: пропущено }));
-      return;
+      return t('replies.summary', { n: удалено, m: пропущено });
     }
     throw new Error(t('replies.none'));
   };

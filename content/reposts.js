@@ -33,7 +33,7 @@ XC.модуль('reposts', () => {
       'reposts.stopped': 'остановлено',
       'reposts.backgroundFailed': 'фон не смог снять этот репост — остановился',
       'reposts.undoing': 'отменяю по одному: снято {n}',
-      'reposts.summary': 'снято сейчас {n}, уже снято ранее {m}',
+      'reposts.summary': 'снято {n}, уже снято ранее {m} — обнови вкладку, карточки в кэше',
       'reposts.none': 'не вижу твоих репостов — открой свой профиль, вкладку «Репосты»'
     },
     en: {
@@ -49,7 +49,7 @@ XC.модуль('reposts', () => {
       'reposts.stopped': 'stopped',
       'reposts.backgroundFailed': 'the background could not undo this repost — stopped',
       'reposts.undoing': 'undoing one by one: {n} undone',
-      'reposts.summary': '{n} undone now, {m} already undone earlier',
+      'reposts.summary': '{n} undone, {m} already undone — reload the tab, cards are cached',
       'reposts.none': 'I cannot see your reposts — open your profile’s Reposts tab'
     }
   });
@@ -270,8 +270,7 @@ XC.модуль('reposts', () => {
     }
 
     if (снято || пропущено) {
-      сообщить(t('reposts.summary', { n: снято, m: пропущено }));
-      return;
+      return t('reposts.summary', { n: снято, m: пропущено });
     }
     throw new Error(t('reposts.none'));
   };

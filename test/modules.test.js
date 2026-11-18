@@ -399,6 +399,59 @@ const загрузитьФайл = async (dom, idИнпута, текст, им�
   dom.window.close();
 }
 
+// --- 8в. ответы без архива: свой пост, а не вложенная цитата --------------
+// В карточке ответа ссылка на вложенный чужой пост стоит раньше своей.
+// Если взять её, DeleteTweet уйдёт на чужой пост, получит 404 и запишет
+// этот id в историю — а видимая карточка ответа останется.
+{
+  const dom = страница('/me/with_replies', `
+    <a data-testid="AppTabBar_Profile_Link" href="/me">Профиль</a>
+    <article data-testid="tweet">
+      <a href="/other/status/999"><time datetime="2026-11-14T09:00:00">14 ноя</time></a>
+      <div role="group"></div>
+      <a href="/me/status/701"><time datetime="2026-11-14T10:00:00">14 ноя</time></a>
+    </article>`,
+  { 'защита': { ники: [], id: [] } });
+  dom.window.__XC_ТЕСТ_БЫСТРО = true;
+  dom.window.document.cookie = 'ct0=тест';
+
+  await поднять(dom, ['../content/replies.js']);
+  dom.window.__ответы.панель.querySelector('[data-без-архива]')
+    .dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+  await ждать(250);
+
+  const добавки = dom.window.__сообщения.filter(с => с.type === 'jobs-add' && (с.ids || []).length);
+  assert.deepEqual(добавки.map(с => [...с.ids]), [['701']],
+    'id ответа берётся из своей ссылки, а не из вложенной цитаты');
+  console.log('ок: ответы без архива — берётся свой пост, а не вложенная цитата');
+  dom.window.close();
+}
+
+// --- 8г. ответы: удалённое ранее пропускается и объясняется ----------------
+{
+  const dom = страница('/me/with_replies', `
+    <a data-testid="AppTabBar_Profile_Link" href="/me">Профиль</a>
+    <article data-testid="tweet">
+      <div role="group"></div>
+      <a href="/me/status/700"><time datetime="2026-11-14T10:00:00">14 ноя</time></a>
+    </article>`,
+  { 'защита': { ники: [], id: [] }, 'история': { replies: { ids: ['700'], ts: Date.now() } } });
+  dom.window.__XC_ТЕСТ_БЫСТРО = true;
+  dom.window.document.cookie = 'ct0=тест';
+
+  await поднять(dom, ['../content/replies.js']);
+  dom.window.__ответы.панель.querySelector('[data-без-архива]')
+    .dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+  await ждать(300);
+
+  const добавки = dom.window.__сообщения.filter(с => с.type === 'jobs-add' && (с.ids || []).length);
+  assert.deepEqual(добавки.map(с => [...с.ids]), [], 'id из истории не отправляем в фон');
+  const низ = dom.window.__ответы.панель.querySelector('[data-низ]').textContent;
+  assert.match(низ, /кэш/i, 'пропуск должен объяснять, что карточка осталась в кэше страницы');
+  console.log('ок: ответы — удалённое ранее пропускается с понятным объяснением');
+  dom.window.close();
+}
+
 // --- 9. разбор архива: репосты по флагу и по «RT @», без дублей ----------
 {
   const dom = страница('/home', '', { 'защита': { ники: [], id: [] } });
